@@ -1,0 +1,283 @@
+﻿<UserControl x:Class="ProvissyTools.MainView"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+			 xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:livet="http://schemas.livet-mvvm.net/2011/wpf"
+			 xmlns:metro="http://schemes.grabacr.net/winfx/2014/controls"
+			 xmlns:metro2="clr-namespace:Grabacr07.Desktop.Metro.Controls;assembly=Desktop.Metro"
+			 xmlns:properties="clr-namespace:Grabacr07.KanColleViewer.Properties;assembly=KanColleViewer"
+			 xmlns:vContents="clr-namespace:Grabacr07.KanColleViewer.Views.Contents;assembly=KanColleViewer"
+			 xmlns:vmContents="clr-namespace:Grabacr07.KanColleViewer.ViewModels.Contents;assembly=KanColleViewer"
+			 xmlns:controls="clr-namespace:Grabacr07.KanColleViewer.Views.Controls;assembly=KanColleViewer"
+			 xmlns:viewModels="clr-namespace:Grabacr07.KanColleViewer.ViewModels;assembly=KanColleViewer"
+			 xmlns:models="clr-namespace:Grabacr07.KanColleViewer.Models;assembly=KanColleViewer"
+			 mc:Ignorable="d"
+			 d:DesignWidth="580"
+			 d:DesignHeight="300"
+			 FontSize="12"
+			 d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ObjectDataProvider x:Key="EnumerableRange"
+								xmlns:sys="clr-namespace:System;assembly=mscorlib"
+								xmlns:linq="clr-namespace:System.Linq;assembly=System.Core"
+								ObjectType="{x:Type linq:Enumerable}" MethodName="Range">
+                <ObjectDataProvider.MethodParameters>
+                    <sys:Int32>1</sys:Int32>
+                    <sys:Int32>150</sys:Int32>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Common.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+
+        <!--Control Grids-->
+        <metro2:CallMethodButton x:Name="funcbtn_Cal" Content="经验值计算器！" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_Cal_Click" Visibility="Hidden"/>
+        <metro2:CallMethodButton x:Name="funcbtn_Settings" Content="设置" HorizontalAlignment="Left" Margin="208,50,0,0" VerticalAlignment="Top" Height="50" Width="152" FontSize="36" Click="funcbtn_Settings_Click"/>
+        <metro2:CallMethodButton x:Name="funcbtn_2014AutEvent" Content="2014 秋イベント！" HorizontalAlignment="Left" Margin="208,0,0,0" VerticalAlignment="Top" Height="50" Width="189" FontSize="24" Click="CallMethodButton_Click_4" Visibility="Hidden"/>
+        <metro2:CallMethodButton x:Name="funcbtn_BugReport" Content="反馈BUG！" HorizontalAlignment="Left" Margin="397,0,0,0" VerticalAlignment="Top" Height="50" Width="183" FontSize="24" Visibility="Hidden"/>
+        <metro2:CallMethodButton x:Name="btn_OpenFunc" Content="↓展开功能↓" Margin="248,0,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click" HorizontalAlignment="Left" Width="85"/>
+        <metro2:CallMethodButton x:Name="btn_ClickToClose" Content="Close" Margin="266,99,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btn_ClickToClose_Click" Width="55" Visibility="Hidden"/>
+        <metro2:CallMethodButton x:Name="btn_BackToHomePage" Content="←回到主页" HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Click="btn_BackToHomePage_Click"/>
+        <metro2:CallMethodButton x:Name="funcbtn_OpenDataView" Content="查看统计数据！" HorizontalAlignment="Left" Margin="0,50,0,0" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_OpenDataView_Click"/>
+
+        <!--End-->
+
+        <Grid x:Name="WelcomePage" Visibility="Hidden">
+            <TextBlock Margin="10,100,0,0" VerticalAlignment="Top" FontSize="36" TextAlignment="Center" Foreground="White" HorizontalAlignment="Left" Width="560"><Run Text="欢迎使用 Provissy Tools ！"/><LineBreak/><Run Text="Provissy Toolsへようこそ！"/></TextBlock>
+            <Label Content="Version 0.5 Beta. Written By @Provissy."  VerticalAlignment="Bottom" HorizontalAlignment="Right"  Margin="0,0,10,0" Foreground="White"/>
+            <metro2:CallMethodButton x:Name="chkUpdateButton" Content="检查更新" Margin="0,0,231,0" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="66" Click="CallMethodButton_Click_1"/>
+            <Label Content="出击掉落统计，资源统计，建造、开发统计功能正常（结果保存在KCV目录，亦可在'统计'中查看）" HorizontalAlignment="Right" Margin="0,0,0,22" VerticalAlignment="Bottom" Foreground="White"/>
+            <metro2:CallMethodButton Content="捐赠！" HorizontalAlignment="Right" Margin="0,0,302,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_2"/>
+            <Label Content="V0.6版本！修复bug！服务器迁移至日本！" HorizontalAlignment="Right" Margin="0,0,0,48" VerticalAlignment="Bottom" Foreground="White"/>
+            <metro2:CallMethodButton Content="前往贴吧页面" HorizontalAlignment="Right" Margin="0,0,361,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_3"/>
+            <metro2:CallMethodButton Content="前往我的主页" HorizontalAlignment="Right" Margin="0,0,456,0" VerticalAlignment="Bottom" Width="99" Click="CallMethodButton_Click_8"/>
+
+        </Grid>
+
+        <Grid x:Name="PrvToolsSettings" Visibility="Hidden">
+            <CheckBox Content="打开声音提醒（不可用）。" IsChecked="{Binding EnableSoundNotify}" HorizontalAlignment="Left" Margin="105,120,0,0" VerticalAlignment="Top"/>
+            <CheckBox Content="无功能" HorizontalAlignment="Left" Margin="105,140,0,0" VerticalAlignment="Top"/>
+        </Grid>
+
+        <Grid x:Name="AkiEvent2014" Visibility="Hidden">
+
+        </Grid>
+
+        <Grid x:Name="StatisticsData" Visibility="Hidden">
+            <DataGrid x:Name="StatisticsDataGrid" Margin="10,0,10,10" Height="220" VerticalAlignment="Bottom"/>
+            <metro2:CallMethodButton Content="开发统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,34,0,0" Click="CallMethodButton_Click_5"/>
+            <metro2:CallMethodButton Content="建造统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="257,34,0,0" Click="CallMethodButton_Click_6"/>
+            <metro2:CallMethodButton Content="掉落统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="429,34,0,0" Click="CallMethodButton_Click_7"/>
+
+        </Grid>
+
+        <Grid x:Name="ExpCal" Visibility="Hidden" >
+
+            <StackPanel Margin="0,26,0,-17">
+                <metro:PromptComboBox Margin="15,8,0,8"
+							  HorizontalAlignment="Left"
+							  Prompt="选择舰娘"
+							  ItemsSource="{Binding Ships}"
+							  DisplayMemberPath="Ship"
+							  SelectedValuePath="Ship"
+							  SelectedValue="{Binding CurrentShip, Mode=TwoWay}"
+							  IsReadOnly="True"
+							  MinWidth="220" />
+                <Grid Margin="15,0,-15,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock HorizontalAlignment="Left"
+						   Margin="2,8,0,34"
+						   Text="当前等级" Grid.RowSpan="2" />
+
+                        <metro:PromptComboBox Margin="8"
+									  ItemsSource="{Binding Source={StaticResource EnumerableRange}}"
+									  HorizontalAlignment="Left"
+									  Prompt=""
+									  SelectedValue="{Binding CurrentLevel, Mode=TwoWay}"
+									  IsReadOnly="True"
+									  MinWidth="50"
+									  Grid.Column="1"/>
+
+                        <metro:PromptTextBox Grid.Column="2"
+									 Text="{Binding CurrentExp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									 Prompt=""
+									 Padding="2"
+									 Margin="8"
+									 MinWidth="70"
+									 HorizontalAlignment="Left"
+									 IsReadOnly="True" />
+
+                        <TextBlock HorizontalAlignment="Left"
+						   Margin="2,8,0,-8"
+						   Grid.Column="0"
+						   Grid.Row="1"
+						   Text="目标等级" />
+
+                        <metro:PromptComboBox Margin="8"
+									  ItemsSource="{Binding Source={StaticResource EnumerableRange}}"
+									  HorizontalAlignment="Left"
+									  Prompt=""
+									  SelectedValue="{Binding TargetLevel, Mode=TwoWay}"
+									  IsReadOnly="True"
+									  MinWidth="50"
+									  Grid.Column="1"
+									  Grid.Row="1"/>
+
+                        <metro:PromptTextBox Grid.Column="2"
+									 Grid.Row="1"
+									 Text="{Binding TargetExp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									 Prompt=""
+									 Padding="2"
+									 Margin="8"
+									 MinWidth="70"
+									 HorizontalAlignment="Left"
+									 IsReadOnly="True" />
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock HorizontalAlignment="Left"
+						   Margin="2,8,0,-8"
+						   Text="海域" />
+
+                        <metro:PromptComboBox Margin="8"
+									  ItemsSource="{Binding SeaList}"
+									  HorizontalAlignment="Left"
+									  Prompt=""
+									  SelectedValue="{Binding SelectedSea, Mode=TwoWay}"
+									  IsReadOnly="True"
+									  MinWidth="50"
+									  Grid.Column="1" />
+
+                        <TextBlock HorizontalAlignment="Left"
+						   Margin="8,8,0,-8"
+						   Grid.Column="2"
+						   Text="结果" />
+
+                        <metro:PromptComboBox Margin="18,6,0,10"
+									  ItemsSource="{Binding ResultList}"
+									  HorizontalAlignment="Left"
+									  Prompt=""
+									  SelectedValue="{Binding SelectedResult, Mode=TwoWay}"
+									  IsReadOnly="True"
+									  MinWidth="50"
+									  Grid.Column="3" />
+                    </Grid>
+
+                    <Rectangle Height="1"
+					   Margin="8"
+					   Grid.Row="2"
+					   Grid.ColumnSpan="2"
+					   Style="{DynamicResource SeparatorRectangleStyleKey}" />
+
+                    <Grid Grid.Column="1" Margin="80,0,96,38" Grid.RowSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock HorizontalAlignment="Left"
+						   Margin="12,14,0,27"
+						   Text="出击经验值" Grid.ColumnSpan="2" Width="108" />
+
+                        <metro:PromptTextBox Grid.Column="1"
+									 Text="{Binding SortieExp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									 Prompt=""
+									 Padding="2"
+									 Margin="8,10,0,21"
+									 MinWidth="70"
+									 HorizontalAlignment="Left"
+									 IsReadOnly="True" RenderTransformOrigin="0.457,0.154" Width="60" />
+
+                        <metro:PromptTextBox Grid.Column="1"
+									 Text="{Binding RunCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									 Prompt=""
+									 Padding="2"
+									 Margin="8,47,0,24"
+									 MinWidth="40"
+									 HorizontalAlignment="Left"
+									 IsReadOnly="True" Grid.RowSpan="2" Width="70" />
+
+                        <TextBlock HorizontalAlignment="Left"
+						   Margin="10,37,0,-37"
+						   Grid.Row="1"
+						   Text="余剩经验值" />
+
+                        <metro:PromptTextBox Grid.Column="1"
+									 Grid.Row="1"
+									 Text="{Binding RemainingExp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									 Prompt=""
+									 Padding="2"
+									 Margin="8,37,0,-21"
+									 MinWidth="70"
+									 HorizontalAlignment="Left"
+									 IsReadOnly="True" />
+                        <TextBlock TextWrapping="Wrap" Text="余剩场数" Margin="12,47,30,37" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+
+                    </Grid>
+
+                    <StackPanel Grid.Column="1"
+						Grid.RowSpan="2"
+						VerticalAlignment="Center" Margin="0,34,308,33">
+                        <CheckBox Content="旗舰" IsChecked="{Binding IsFlagship}" Height="17" Margin="8,0,-31,10"/>
+                        <CheckBox Content="MVP" IsChecked="{Binding IsMVP}" Height="17" Margin="8,0,-51,10"/>
+                    </StackPanel>
+
+                </Grid>
+
+            </StackPanel>
+
+
+
+
+
+        </Grid>
+        
+
+    </Grid>
+
+
+</UserControl>
