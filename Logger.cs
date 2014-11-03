@@ -114,7 +114,8 @@ namespace ProvissyTools
         {
             try
             {
-                string mainFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                //string mainFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                string mainFolder = System.Environment.CurrentDirectory;
 
 
                 switch (type)

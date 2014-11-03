@@ -48,7 +48,6 @@ C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\bin\Debug\zh-
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\ProvissyTools.csprojResolveAssemblyReference.cache
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\MainView.baml
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\Common.baml
-C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\StylesForMainView.baml
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\MainView.g.cs
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\ProvissyTools_MarkupCompile.cache
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\ProvissyTools.g.resources
@@ -56,3 +55,9 @@ C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\Pro
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\ProvissyTools.csproj.GenerateResource.Cache
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\ProvissyTools.dll
 C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\ProvissyTools.pdb
+C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\bin\Debug\System.Windows.Controls.DataVisualization.Toolkit.dll
+C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\bin\Debug\WPFToolkit.dll
+C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\bin\Debug\System.Windows.Controls.DataVisualization.Toolkit.pdb
+C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\bin\Debug\WPFToolkit.pdb
+C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\Window2.baml
+C:\Users\Provissy\Desktop\Src-KanColleViewer\Plugins\ProvissyTools\obj\Debug\Window2.g.cs

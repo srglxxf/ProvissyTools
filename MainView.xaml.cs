@@ -41,8 +41,10 @@ namespace ProvissyTools
 		public MainView()
 		{
 			InitializeComponent();
+            WelcomePage.Visibility = Visibility.Visible;
             //timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
             //timer.Start();
+            
 		}
 
 
@@ -61,8 +63,8 @@ namespace ProvissyTools
 
         bool newUpdateAvailable = false;
 
-        private string keyWord = "#14110102#";
-        public const string Curversion = "#14110102#";
+        private string keyWord = "#14110302#";
+        public const string Curversion = "#14110302#";
         /// <summary>
         /// Check update by downloading a page.
         /// </summary>
@@ -116,7 +118,7 @@ namespace ProvissyTools
                     }
                     if (flag)
                     {
-                        str = Environment.CurrentDirectory + @"\check";
+                        str = "check";
                         System.IO.FileStream myStreama = new FileStream(str, FileMode.Open);       //Read File.
                         System.IO.StreamReader myStreamReader = new StreamReader(myStreama);
                         fileContent = myStreamReader.ReadToEnd();
@@ -209,10 +211,15 @@ namespace ProvissyTools
         private void CallMethodButton_Click(object sender, RoutedEventArgs e)
         {
             btn_OpenFunc.Visibility = Visibility.Hidden;
+            btn_BackToHomePage.Visibility = Visibility.Hidden;
+            //Functions
             funcbtn_2014AutEvent.Visibility = Visibility.Visible;
             funcbtn_BugReport.Visibility = Visibility.Visible;
             funcbtn_Cal.Visibility = Visibility.Visible;
             funcbtn_OpenDataView.Visibility = Visibility.Visible;
+            funcbtn_Settings.Visibility = Visibility.Visible;
+            funcbtn_Donate.Visibility = Visibility.Visible;
+            //End
             btn_ClickToClose.Visibility = Visibility.Visible;
         }
 
@@ -223,11 +230,16 @@ namespace ProvissyTools
 
         private void closeFuncTab()
         {
+            //Functions.
             funcbtn_2014AutEvent.Visibility = Visibility.Hidden;
             funcbtn_BugReport.Visibility = Visibility.Hidden;
             funcbtn_Cal.Visibility = Visibility.Hidden;
             funcbtn_OpenDataView.Visibility = Visibility.Hidden;
+            funcbtn_Settings.Visibility = Visibility.Hidden;
+            funcbtn_Donate.Visibility = Visibility.Hidden;
+            // End.
             btn_ClickToClose.Visibility = Visibility.Hidden;
+            btn_BackToHomePage.Visibility = Visibility.Visible;
             btn_OpenFunc.Visibility = Visibility.Visible;
         }
 
@@ -238,6 +250,7 @@ namespace ProvissyTools
             AkiEvent2014.Visibility = Visibility.Hidden;
             ExpCal.Visibility = Visibility.Hidden;
             StatisticsData.Visibility = Visibility.Hidden;
+            DonateMe.Visibility = Visibility.Hidden;
         }
 
         private void funcbtn_Cal_Click(object sender, RoutedEventArgs e)
@@ -339,30 +352,28 @@ namespace ProvissyTools
         //ken so
         private void CallMethodButton_Click_5(object sender, RoutedEventArgs e)
         {
-            loadCSV_Files("ItemBuildLog.csv");
+            loadCSV_Files(System.Environment.CurrentDirectory + "\\ItemBuildLog.csv");
         }
 
         //kai ha tsu
         private void CallMethodButton_Click_6(object sender, RoutedEventArgs e)
         {
-            loadCSV_Files("ShipBuildLog.csv");
+            loadCSV_Files(System.Environment.CurrentDirectory + "\\ShipBuildLog.csv");
         }
 
         // do ro tsu pu
         private void CallMethodButton_Click_7(object sender, RoutedEventArgs e)
         {
-            loadCSV_Files("DropLog.csv");
+            loadCSV_Files(System.Environment.CurrentDirectory + "\\DropLog.csv");
         }
         #endregion
 
-        private void CallMethodButton_Click_8(object sender, RoutedEventArgs e)
-        {
-            Process.Start("http://provissy.com");
-        }
+
 
         private void btn_BackToHomePage_Click(object sender, RoutedEventArgs e)
         {
             closeAllTabs();
+            btn_BackToHomePage.Visibility = Visibility.Hidden;
             WelcomePage.Visibility = Visibility.Visible;
         }
 
@@ -372,6 +383,48 @@ namespace ProvissyTools
             closeFuncTab();
             PrvToolsSettings.Visibility = Visibility.Visible;
         }
-        
+        private void CallMethodButton_Click_8(object sender, RoutedEventArgs e)
+        {
+            Process.Start("http://provissy.com");
+        }
+
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Clipboard.SetDataObject("linxunpei@hotmail.com");
+            MessageBox.Show("支付宝地址已复制！");
+        }
+
+        private void funcbtn_Donate_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            DonateMe.Visibility = Visibility.Visible;
+        }
+
+        private void CallMethodButton_Click_9(object sender, RoutedEventArgs e)
+        { 
+            if(File.Exists("System.Windows.Controls.DataVisualization.Toolkit.dll") && File.Exists("WPFToolkit.dll"))
+            {
+                Window2 mc = new Window2();
+                mc.Show();
+            }
+            else
+            {
+                try
+                {
+                    Uri u = new Uri("ftp://ftp.provissy.boo.jp/");
+                    FTPControl fc = new FTPControl(u, "boo.jp-provissy", "mn3xP2w6");
+                    fc.GotoDirectory("ChartRequiredDLL");
+                    fc.DownloadFile("System.Windows.Controls.DataVisualization.Toolkit.dll", System.Environment.CurrentDirectory);
+                    fc.DownloadFile("WPFToolkit.dll", System.Environment.CurrentDirectory);
+                    MessageBox.Show("请重试一次！");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("下载必要DLL错误！程序即将爆炸！（多试几次？） " + ex.ToString());
+                }
+            }
+            
+        }
 	}
 }
