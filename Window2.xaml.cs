@@ -24,7 +24,7 @@ namespace ProvissyTools
         public Window2()
         {
             InitializeComponent();
-            initializeSoNoDobiraWo();
+            initializeChart();
         }
 
 
@@ -137,7 +137,7 @@ namespace ProvissyTools
             return ls;
         }
 
-        private void initializeSoNoDobiraWo()
+        private void initializeChart()
         {
             try
             {
@@ -146,6 +146,8 @@ namespace ProvissyTools
             catch (Exception ex)
             {
                 MessageBox.Show("加载统计图错误！ " + ex.ToString());
+                MainView m = new MainView();
+                m.ErrorHandler("加载统计图错误！ " + ex.ToString());
             }
         }
     }

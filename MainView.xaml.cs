@@ -41,11 +41,21 @@ namespace ProvissyTools
 		public MainView()
 		{
 			InitializeComponent();
+            Panel.SetZIndex(FunctionGrid, 1);
             WelcomePage.Visibility = Visibility.Visible;
             //timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
             //timer.Start();
-            
 		}
+
+
+        public void ErrorHandler(string errorMessage)
+        {
+            ErrorMessageTextBox.Text = errorMessage;
+            closeAllTabs();
+            closeFuncTab();
+            ErrorHandle.Visibility = Visibility.Visible;
+        
+        }
 
 
         //private void timer_Elapsed(object sender, EventArgs e)
@@ -63,8 +73,8 @@ namespace ProvissyTools
 
         bool newUpdateAvailable = false;
 
-        private string keyWord = "#14110302#";
-        public const string Curversion = "#14110302#";
+        private string keyWord = "#14110303#";
+        public const string Curversion = "#14110303#";
         /// <summary>
         /// Check update by downloading a page.
         /// </summary>
@@ -84,7 +94,7 @@ namespace ProvissyTools
                     if (File.Exists("check"))
                     {
                         try { this.deletefile(); }
-                        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+                        catch (Exception ex) { ErrorHandler(ex.ToString()); }
                         FStream = new FileStream("check", FileMode.Create);
                         SPosition = 0;
                     }
@@ -140,8 +150,7 @@ namespace ProvissyTools
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("更新检查失败！点击确定手动检查更新！错误信息：" + ex);
-                    Process.Start("http://provissy.com");
+                    ErrorHandler("更新检查失败！重新检查试试？错误信息：" + ex);
                 }
             }
             else
@@ -160,7 +169,7 @@ namespace ProvissyTools
             }
             catch
             {
-                MessageBox.Show("ERROR WHEN CHECKING UPDATE");
+                ErrorHandler("ERROR WHEN CHECKING UPDATE");
             }
         }
         #endregion
@@ -181,7 +190,7 @@ namespace ProvissyTools
             }
             catch (Exception ex)
             {
-                MessageBox.Show("更新时出错！ " + ex.ToString());
+                ErrorHandler("更新时出错！ " + ex.ToString());
             }
 
         }
@@ -204,7 +213,9 @@ namespace ProvissyTools
 
         private void CallMethodButton_Click_4(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("敬请期待！");
+            closeAllTabs();
+            closeFuncTab();
+            AkiEvent2014.Visibility = Visibility.Visible;
         }
 
         //Open menu.
@@ -213,7 +224,7 @@ namespace ProvissyTools
             btn_OpenFunc.Visibility = Visibility.Hidden;
             btn_BackToHomePage.Visibility = Visibility.Hidden;
             //Functions
-            funcbtn_2014AutEvent.Visibility = Visibility.Visible;
+            funcbtn_2014AkiEvent.Visibility = Visibility.Visible;
             funcbtn_BugReport.Visibility = Visibility.Visible;
             funcbtn_Cal.Visibility = Visibility.Visible;
             funcbtn_OpenDataView.Visibility = Visibility.Visible;
@@ -231,7 +242,7 @@ namespace ProvissyTools
         private void closeFuncTab()
         {
             //Functions.
-            funcbtn_2014AutEvent.Visibility = Visibility.Hidden;
+            funcbtn_2014AkiEvent.Visibility = Visibility.Hidden;
             funcbtn_BugReport.Visibility = Visibility.Hidden;
             funcbtn_Cal.Visibility = Visibility.Hidden;
             funcbtn_OpenDataView.Visibility = Visibility.Hidden;
@@ -251,6 +262,7 @@ namespace ProvissyTools
             ExpCal.Visibility = Visibility.Hidden;
             StatisticsData.Visibility = Visibility.Hidden;
             DonateMe.Visibility = Visibility.Hidden;
+            ErrorHandle.Visibility = Visibility.Hidden;
         }
 
         private void funcbtn_Cal_Click(object sender, RoutedEventArgs e)
@@ -280,7 +292,7 @@ namespace ProvissyTools
             }
             catch(Exception ex)
             {
-                MessageBox.Show("加载错误！ " + ex.Message);
+                ErrorHandler("加载错误！ " + ex.Message);
             }
         }
 
@@ -417,11 +429,11 @@ namespace ProvissyTools
                     fc.GotoDirectory("ChartRequiredDLL");
                     fc.DownloadFile("System.Windows.Controls.DataVisualization.Toolkit.dll", System.Environment.CurrentDirectory);
                     fc.DownloadFile("WPFToolkit.dll", System.Environment.CurrentDirectory);
-                    MessageBox.Show("请重试一次！");
+                    MessageBox.Show("请再试一次！");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("下载必要DLL错误！程序即将爆炸！（多试几次？） " + ex.ToString());
+                    ErrorHandler("下载必要DLL错误！程序即将爆炸！（多试几次？） " + ex.ToString());
                 }
             }
             

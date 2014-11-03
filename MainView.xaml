@@ -18,7 +18,7 @@
 			 d:DesignWidth="580"
 			 d:DesignHeight="300"
 			 FontSize="12"
-			 d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
+			 d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}" FontFamily="Meiryo"
              >
     <UserControl.Resources>
         <ResourceDictionary>
@@ -38,38 +38,44 @@
 
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid x:Name="MainGrid">
 
-        <!--Control Grids-->
-        <metro2:CallMethodButton x:Name="funcbtn_Cal" Content="经验值计算器！" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_Cal_Click" Visibility="Hidden"/>
-        <metro2:CallMethodButton x:Name="funcbtn_Settings" Content="设置" HorizontalAlignment="Left" Margin="208,50,0,0" VerticalAlignment="Top" Height="50" Width="152" FontSize="36" Click="funcbtn_Settings_Click" Visibility="Hidden"/>
-        <metro2:CallMethodButton x:Name="funcbtn_Donate" Content="捐赠！" HorizontalAlignment="Left" Margin="360,50,0,0" VerticalAlignment="Top" Height="50" Width="160" FontSize="36" Visibility="Hidden" Click="funcbtn_Donate_Click"/>
-        <metro2:CallMethodButton x:Name="funcbtn_2014AutEvent" Content="2014 秋イベント！" HorizontalAlignment="Left" Margin="208,0,0,0" VerticalAlignment="Top" Height="50" Width="189" FontSize="24" Click="CallMethodButton_Click_4" Visibility="Hidden"/>
-        <metro2:CallMethodButton x:Name="funcbtn_BugReport" Content="反馈BUG！" HorizontalAlignment="Left" Margin="397,0,0,0" VerticalAlignment="Top" Height="50" Width="183" FontSize="24" Visibility="Hidden"/>
-        <metro2:CallMethodButton x:Name="btn_OpenFunc" Content="↓展开功能↓" Margin="248,0,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click" HorizontalAlignment="Left" Width="85"/>
-        <metro2:CallMethodButton x:Name="btn_ClickToClose" Content="Close" Margin="266,99,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btn_ClickToClose_Click" Width="55" Visibility="Hidden"/>
-        <metro2:CallMethodButton x:Name="btn_BackToHomePage" Content="←回到主页" HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Click="btn_BackToHomePage_Click" Visibility="Hidden"/>
-        <metro2:CallMethodButton x:Name="funcbtn_OpenDataView" Content="查看统计数据！" HorizontalAlignment="Left" Margin="0,50,0,0" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_OpenDataView_Click" Visibility="Hidden"/>
+        <Grid x:Name="FunctionGrid">
+            <metro2:CallMethodButton x:Name="funcbtn_Cal" Content="经验值计算器" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_Cal_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_Settings" Content="设置" HorizontalAlignment="Left" Margin="208,50,0,0" VerticalAlignment="Top" Height="50" Width="152" FontSize="36" Click="funcbtn_Settings_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_Donate" Content="捐赠" HorizontalAlignment="Left" Margin="360,50,0,0" VerticalAlignment="Top" Height="50" Width="160" FontSize="36" Click="funcbtn_Donate_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_2014AkiEvent" Content="発動！渾作戦" HorizontalAlignment="Left" Margin="208,0,0,0" VerticalAlignment="Top" Height="50" Width="189" FontSize="24" Click="CallMethodButton_Click_4" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_BugReport" Content="反馈BUG！" HorizontalAlignment="Left" Margin="397,0,0,0" VerticalAlignment="Top" Height="50" Width="173" FontSize="24" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="btn_OpenFunc" Content="↓展开功能↓" Margin="248,0,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click" HorizontalAlignment="Left" Width="92"/>
+            <metro2:CallMethodButton x:Name="btn_ClickToClose" Content="Close" Margin="266,99,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btn_ClickToClose_Click" Width="55" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="btn_BackToHomePage" Content="←回到主页" HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Click="btn_BackToHomePage_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_OpenDataView" Content="查看统计数据！" HorizontalAlignment="Left" Margin="0,50,0,0" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_OpenDataView_Click" Visibility="Hidden"/>
+        </Grid>
 
-        <!--End-->
+        <Grid x:Name="ErrorHandle" Visibility="Hidden">
+            <TextBlock Margin="10,50,20,0" Text="很抱歉！程序出现了问题！" VerticalAlignment="Top" FontSize="36" TextAlignment="Center"/>
+            <TextBox x:Name="ErrorMessageTextBox" Margin="10,96,10,10" TextWrapping="Wrap" Text="" IsReadOnly="True"/>
+
+        </Grid>
+
 
         <Grid x:Name="WelcomePage" Visibility="Hidden">
             <TextBlock Margin="10,106,0,0" VerticalAlignment="Top" FontSize="36" TextAlignment="Center" Foreground="White" HorizontalAlignment="Left" Width="560"><Run Text="欢迎使用 Provissy Tools ！"/><LineBreak/><Run Text="Provissy Toolsへようこそ！"/></TextBlock>
-            <Label Content="Version 0.6 Beta. Written By @Provissy."  VerticalAlignment="Bottom" HorizontalAlignment="Right"  Margin="0,0,10,0" Foreground="White"/>
+            <Label Content="V0.7 Beta. Written By @Provissy."  VerticalAlignment="Bottom" HorizontalAlignment="Right"  Margin="0,0,10,0" Foreground="White"/>
             <metro2:CallMethodButton x:Name="chkUpdateButton" Content="检查更新" Margin="0,0,231,0" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="66" Click="CallMethodButton_Click_1"/>
             <Label Content="出击掉落统计，资源统计，建造、开发统计功能正常（结果保存在KCV目录，亦可在'统计'中查看）" HorizontalAlignment="Right" Margin="0,0,0,22" VerticalAlignment="Bottom" Foreground="White"/>
             <metro2:CallMethodButton Content="捐赠！" HorizontalAlignment="Right" Margin="0,0,302,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_2"/>
-            <Label Content="V0.68版本！修复资源统计图！点击前往我的主页查看详细更新日志！" HorizontalAlignment="Right" Margin="0,0,0,48" VerticalAlignment="Bottom" Foreground="White"/>
+            <Label Content="V0.7版本！修复全部UI问题！美化字体！点击查看详细更新日志！" HorizontalAlignment="Right" Margin="0,0,0,48" VerticalAlignment="Bottom" Foreground="White"/>
             <metro2:CallMethodButton Content="前往贴吧页面" HorizontalAlignment="Right" Margin="0,0,361,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_3"/>
-            <metro2:CallMethodButton Content="前往我的主页" HorizontalAlignment="Right" Margin="0,0,456,0" VerticalAlignment="Bottom" Width="99" Click="CallMethodButton_Click_8"/>
+            <metro2:CallMethodButton Content="我的主页" HorizontalAlignment="Right" Margin="0,0,456,0" VerticalAlignment="Bottom" Width="99" Click="CallMethodButton_Click_8"/>
 
         </Grid>
 
         <Grid x:Name="DonateMe" Visibility="Hidden">
             <TextBlock HorizontalAlignment="Left" Margin="10,89,0,0" Text="请捐助我，帮我做的更好！" VerticalAlignment="Top" Foreground="White" FontSize="24"/>
             <TextBlock HorizontalAlignment="Left" Margin="10,124,0,0" Text="linxunpei@hotmail.com" VerticalAlignment="Top" Foreground="White" MouseDown="TextBlock_MouseDown" FontSize="24" Cursor="Hand"/>
-            <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="230" Margin="335,50,0,0" Stroke="Black" VerticalAlignment="Top" Width="235"/>
-            <Image HorizontalAlignment="Left" Height="230" Margin="335,50,0,0" VerticalAlignment="Top" Width="235" Source="DonateQR-Code.png"/>
+            <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="215" Margin="305,50,0,0" Stroke="Black" VerticalAlignment="Top" Width="220"/>
+            <Image HorizontalAlignment="Left" Height="215" Margin="305,50,0,0" VerticalAlignment="Top" Width="220" Source="DonateQR-Code.png"/>
 
 
         </Grid>
@@ -84,11 +90,11 @@
         </Grid>
 
         <Grid x:Name="StatisticsData" Visibility="Hidden">
-            <DataGrid x:Name="StatisticsDataGrid" Height="230" VerticalAlignment="Bottom"/>
-            <metro2:CallMethodButton Content="开发统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,34,0,0" Click="CallMethodButton_Click_5"/>
-            <metro2:CallMethodButton Content="建造统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="215,34,0,0" Click="CallMethodButton_Click_6"/>
-            <metro2:CallMethodButton Content="掉落统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="449,34,0,0" Click="CallMethodButton_Click_7"/>
-            <metro2:CallMethodButton Content="资源统计图！" HorizontalAlignment="Left" Margin="325,34,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click_9"/>
+            <DataGrid x:Name="StatisticsDataGrid" Margin="0,70,0,0"/>
+            <metro2:CallMethodButton Content="开发统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,25,0,0" Click="CallMethodButton_Click_5" Height="31" Width="90" FontSize="16"/>
+            <metro2:CallMethodButton Content="建造统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="199,25,0,0" Click="CallMethodButton_Click_6" Height="31" Width="95" FontSize="16"/>
+            <metro2:CallMethodButton Content="掉落统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="449,25,0,0" Click="CallMethodButton_Click_7" Height="31" Width="86" FontSize="16"/>
+            <metro2:CallMethodButton Content="资源统计图！" HorizontalAlignment="Left" Margin="320,25,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click_9" Height="31" Width="100" FontSize="16"/>
 
         </Grid>
 
