@@ -5,27 +5,27 @@
         xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         Title="Window2" Height="300" Width="300" WindowState="Maximized" WindowStartupLocation="CenterScreen">
     <Grid>
-        <chartingToolkit:Chart  Name="LineChart1" Title="Material Log">
+        <chartingToolkit:Chart  Name="LineChart1">
             <chartingToolkit:LineSeries Name="Fuel"
-                                                Title="Fuel"  
+                                                Title="燃油"  
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [0]}"
                                                 IsSelectionEnabled="True" AnimationSequence="FirstToLast"/>
             <chartingToolkit:LineSeries Name="Ammo"
-                                                Title="Ammo"  
+                                                Title="弹药"  
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [1]}"
                                                 IsSelectionEnabled="True" AnimationSequence="FirstToLast"/>
             <chartingToolkit:LineSeries Name="Steel"
-                                                Title="Steel"  
+                                                Title="钢材"  
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [2]}"
                                                 IsSelectionEnabled="True" AnimationSequence="FirstToLast"/>
             <chartingToolkit:LineSeries Name="Bauxite"
-                                                Title="Bauxite"  
+                                                Title="铝土"  
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [3]}"

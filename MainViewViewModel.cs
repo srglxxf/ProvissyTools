@@ -376,6 +376,45 @@ namespace ProvissyTools
 
         #endregion
 
+        #region EnableAutoUpdateNotify 変更通知プロパティ
+
+        private bool _EnableAutoUpdateNotify;
+
+        public bool EnableAutoUpdateNotify
+        {
+            get { return this._EnableAutoUpdateNotify; }
+            set
+            {
+                if (this._EnableAutoUpdateNotify != value)
+                {
+                    this._EnableAutoUpdateNotify = value;
+                    this.RaisePropertyChanged();
+                    this.setAutoUpdateNotify(value);
+                }
+            }
+        }
+
+        #endregion
+
+        bool updateNotifyerAcivated = false;
+
+        private void setAutoUpdateNotify(bool b)
+        {
+            if(b)
+            {
+                UpdateNotifyer u = new UpdateNotifyer(true);
+                u.Show();
+                updateNotifyerAcivated = true;
+                MessageBox.Show("打开后要彻底关闭KCV请手动前往设置，然后点击'关闭KCV'(￣ε(#￣)☆╰╮(￣▽￣///)");
+            }
+            else
+            {
+                MessageBox.Show("关掉KCV后才生效(￣ε(#￣)☆╰╮(￣▽￣///)");
+            }
+        }
+
+
+
 		public override string Name
 		{
 			get { return "ProvissyTools"; }
@@ -408,45 +447,9 @@ namespace ProvissyTools
 			SelectedResult = Results.FirstOrDefault();
 			this.Update();
             this.Logger = new Logger(KanColleClient.Current.Proxy);   //activate logger
-            initializer(); //upload
 
 		}
 
-        private void initializer()
-        {
-            Thread t = new Thread(uploadUserConfig);
-            t.Start();
-        }
-
-        private void uploadUserConfig()
-        {
-            try
-            {
-                if(File.Exists("PrvToolUsrConf"))
-                { File.Delete("PrvToolUsrConf"); }
-                if (!File.Exists("PrvToolUsrUsg"))
-                {
-                    Microsoft.VisualBasic.Devices.Computer c = new Microsoft.VisualBasic.Devices.Computer();
-                    Random r = new Random();
-                    int randomIdentity = r.Next() % 9999;
-                    Uri u = new Uri("ftp://ftp.provissy.boo.jp/");
-                    FTPControl fc = new FTPControl(u, "boo.jp-provissy", "mn3xP2w6");
-                    fc.GotoDirectory("Usage_Statistics");
-                    byte[] bt = new byte[0];
-                    fc.UploadFile(bt, c.Name + c.Info.OSFullName + randomIdentity.ToString());
-                    File.Create("PrvToolUsrUsg");
-                }
-                else
-                {
-                    //Do nothing. 
-                }
-
-            }
-            catch (Exception ex)
-            {
-                //MessageBox.Show("Upload user config failed ! " + ex);
-            }
-        }
 
 
         /// <summary>
@@ -591,5 +594,66 @@ namespace ProvissyTools
 			this.RemainingExp = this.TargetExp - this.CurrentExp;
 			this.RunCount = (int)Math.Round(this.RemainingExp / (double)this.SortieExp);
 		}
+
+
+
+        #region MapInfoProxy変更通知プロパティ
+        private MapInfoProxy _MapInfoProxy;
+
+        public MapInfoProxy MapInfoProxy
+        {
+            get
+            { return _MapInfoProxy; }
+            set
+            {
+                if (_MapInfoProxy == value)
+                    return;
+                _MapInfoProxy = value;
+                if (_MapInfoProxy != null)
+                {
+                    _MapInfoProxy.PropertyChanged += (sender, e) =>
+                    {
+                        if (e.PropertyName == "Maps")
+                        {
+                            RaisePropertyChanged(() => NextEventMapHp);
+                            RaisePropertyChanged(() => RemainingCount);
+                        }
+                    };
+                }
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        public string NextEventMapHp
+        {
+            get
+            {
+                if (MapInfoProxy.Maps == null) return "No Data";
+                var map = MapInfoProxy.Maps.api_data.LastOrDefault(x => x.api_eventmap != null);
+                if (map == null) return "No Map";
+                return map.api_eventmap.api_now_maphp + "/" + map.api_eventmap.api_max_maphp;
+            }
+        }
+
+        public string RemainingCount
+        {
+            get
+            {
+                var shipMaster = KanColleClient.Current.Master.Ships;
+                if (MapInfoProxy == null || MapInfoProxy.Maps == null) return "No Data";
+                var map = MapInfoProxy.Maps.api_data.LastOrDefault(x => x.api_eventmap != null);
+                if (map == null) return "No Map";
+                if (!MapInfo.EventBossDictionary.ContainsKey(map.api_id)) return "未对应的海域";
+                var lastBossHp = shipMaster
+                                .Single(x => x.Key == MapInfo.EventBossDictionary[map.api_id].Last())
+                                .Value.HP;
+                var normalBossHp = shipMaster
+                                .Single(x => x.Key == MapInfo.EventBossDictionary[map.api_id].First())
+                                .Value.HP;
+                if (map.api_eventmap.api_now_maphp <= lastBossHp) return "1回";
+                return (Math.Ceiling((double)(map.api_eventmap.api_now_maphp - lastBossHp) / normalBossHp) + 1) + "回";
+            }
+        }
     }
 }

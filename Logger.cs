@@ -115,7 +115,7 @@ namespace ProvissyTools
             try
             {
                 //string mainFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-                string mainFolder = System.Environment.CurrentDirectory;
+                string mainFolder = UniversalConstants.CurrentDirectory;
 
 
                 switch (type)
@@ -140,7 +140,7 @@ namespace ProvissyTools
                         {
                             using (var w = File.AppendText(mainFolder + "\\ShipBuildLog.csv"))
                             {
-                                w.WriteLine("Date,Result,Fuel,Ammo,Steel,Bauxite,# of Build Materials");
+                                w.WriteLine("Date,Result,Fuel,Ammo,Steel,Bauxite,# of Develop Kits");
                             }
                         }
                         using (var w = File.AppendText(mainFolder + "\\ShipBuildLog.csv"))
