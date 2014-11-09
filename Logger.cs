@@ -51,7 +51,7 @@ namespace ProvissyTools
             Log(LogType.BuildItem, "{0},{1},{2},{3},{4},{5},{6}",
                 DateTime.Now.ToString(this.LogTimestampFormat),
                 item.api_create_flag == 1 ? KanColleClient.Current.Master.SlotItems[item.api_slot_item.api_slotitem_id].Name : "Penguin",
-                KanColleClient.Current.Homeport.Organization.Fleets[1].Ships[0].Info.Name,
+                KanColleClient.Current.Homeport.Organization.Fleets[1].Ships[0].Info.ShipType.Name,
                 req["api_item1"], req["api_item2"], req["api_item3"], req["api_item4"]);
         }
 

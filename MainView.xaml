@@ -59,17 +59,17 @@
         </Grid>
 
 
-        <Grid x:Name="WelcomePage">
+        <Grid x:Name="WelcomePage" Visibility="Hidden">
             <TextBlock Margin="10,100,10,0" VerticalAlignment="Top" FontSize="36" TextAlignment="Center" Foreground="White"><Run Text="欢迎使用 Provissy Tools ！"/><LineBreak/><Run Text="Provissy Toolsへようこそ！"/></TextBlock>
-            <Label Content="Version1.1. Written By @Provissy."  VerticalAlignment="Bottom" HorizontalAlignment="Right"  Margin="0,0,10,0" Foreground="White"/>
+            <Label Content="Version1.0. Written By @Provissy."  VerticalAlignment="Bottom" HorizontalAlignment="Right"  Margin="0,0,10,0" Foreground="White"/>
             <metro2:CallMethodButton x:Name="chkUpdateButton" Content="检查更新" Margin="0,0,231,0" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="66" Click="CallMethodButton_Click_1"/>
             <Label Content="出击掉落统计，资源统计，建造、开发统计功能后台运行（结果保存在KCV目录，亦可在'统计'中查看）" HorizontalAlignment="Right" Margin="0,0,0,22" VerticalAlignment="Bottom" Foreground="White"/>
             <metro2:CallMethodButton Content="捐赠！" HorizontalAlignment="Right" Margin="0,0,302,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_2"/>
-            <Label Content="改进UI、开发记录 点击访问 provissy.com 查看更新日志及更多信息" HorizontalAlignment="Right" Margin="0,0,0,48" VerticalAlignment="Bottom" Foreground="White" MouseDown="Label_MouseDown" Cursor="Hand"/>
+            <Label Content="V1.0 Build 1000 点击访问 provissy.com 了解更多" HorizontalAlignment="Right" Margin="0,0,0,48" VerticalAlignment="Bottom" Foreground="White" MouseDown="Label_MouseDown" Cursor="Hand"/>
             <metro2:CallMethodButton Content="前往贴吧页面" HorizontalAlignment="Right" Margin="0,0,361,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_3"/>
             <metro2:CallMethodButton Content="更新日志" HorizontalAlignment="Right" Margin="0,0,456,0" VerticalAlignment="Bottom" Width="76" Click="CallMethodButton_Click_8"/>
             <Rectangle Fill="#FFFF3A00" Height="30" Margin="0,50,0,0" Stroke="Black" VerticalAlignment="Top"/>
-            <TextBlock Margin="0,50,0,0" Text="V1.X正式版本！秋活在即，天气转凉，大家注意好身体！" VerticalAlignment="Top" Height="30" TextAlignment="Center" FontSize="20"/>
+            <TextBlock Margin="0,50,0,0" Text="V1.0正式版本！秋活在即，天气转凉，大家注意好身体！" VerticalAlignment="Top" Height="30" TextAlignment="Center" FontSize="20"/>
 
         </Grid>
 
@@ -158,11 +158,11 @@
         </Grid>
 
         <Grid x:Name="EventMapViewer" Margin="0,45,0,0" Visibility="Hidden">
-            <!--<Grid.Resources>
+            <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="Margin" Value="4"/>
                 </Style>
-            </Grid.Resources>-->
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -174,13 +174,15 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" Grid.Row="0" Grid.ColumnSpan="2">
-                <TextBlock Text="※打开活动出击海域画面便会刷新。"/>
-                <TextBlock Text="※地图HP随着攻击BOOS旗舰的次数而变化。"/>
+                <TextBlock Text="※打开活动出击海域画面便会刷新。"
+			   Style="{DynamicResource DefaultTextStyleKey}"/>
+                <TextBlock Text="※地图HP随着攻击BOOS旗舰的次数而变化。"
+			   Style="{DynamicResource DefaultTextStyleKey}"/>
             </StackPanel>
-            <TextBlock Text="攻略中的海域的HP" Grid.Column="0" Grid.Row="1" Foreground="White" FontSize="16" Margin="4,29,4,19" Grid.RowSpan="2"/>
-            <TextBlock Text="最低必要击破次数" Grid.Column="0" Grid.Row="3" Foreground="White" FontSize="16" Margin="4,20,4,138"/>
-            <TextBlock Text="{Binding NextEventMapHp}" Grid.Column="1" Grid.Row="1" FontSize="36" Margin="4,15,4,14" Grid.RowSpan="2"/>
-            <TextBlock Text="{Binding RemainingCount}" Grid.Column="1" Grid.Row="3" FontSize="48" Margin="4,1,4,127"/>
+            <TextBlock Text="攻略中的海域的HP" Grid.Column="0" Grid.Row="1" Foreground="White" FontSize="16" Margin="4,12,4,36" Grid.RowSpan="2"/>
+            <TextBlock Text="最低必要击破次数" Grid.Column="0" Grid.Row="2" Foreground="White" FontSize="16" Margin="4,23,4,175" Grid.RowSpan="2"/>
+            <TextBlock Text="{Binding NextEventMapHp}" Grid.Column="1" Grid.Row="1" FontSize="20" Margin="4,5,4,24" Grid.RowSpan="2"/>
+            <TextBlock Text="{Binding RemainingCount}" Grid.Column="1" Grid.Row="2" FontSize="24" Margin="4,14,4,154" Grid.RowSpan="2"/>
         </Grid>
 
         <Grid x:Name="StatisticsBackup" Visibility="Hidden">
@@ -202,11 +204,11 @@
         <Grid x:Name="StatisticsData" Height="350" VerticalAlignment="Top" Visibility="Hidden">
 
 
-            <DataGrid x:Name="StatisticsDataGrid" Margin="0,70,0,0" IsReadOnly="True"/>
+            <DataGrid x:Name="StatisticsDataGrid" Margin="0,70,0,0"/>
             <metro2:CallMethodButton Content="开发统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="110,25,0,0" Click="CallMethodButton_Click_5" Height="31" Width="90" FontSize="16"/>
             <metro2:CallMethodButton Content="建造统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="220,25,0,0" Click="CallMethodButton_Click_6" Height="31" Width="95" FontSize="16"/>
             <metro2:CallMethodButton Content="掉落统计" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="455,25,0,0" Click="CallMethodButton_Click_7" Height="31" Width="86" FontSize="16"/>
-            <metro2:CallMethodButton Content="资源统计图" HorizontalAlignment="Left" Margin="340,25,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click_9" Height="31" Width="100" FontSize="16"/>
+            <metro2:CallMethodButton Content="资源统计图！" HorizontalAlignment="Left" Margin="340,25,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click_9" Height="31" Width="100" FontSize="16"/>
             <metro2:CallMethodButton x:Name="btn_CloudBackup" Content="云备份" HorizontalAlignment="Left" Margin="0,25,0,0" VerticalAlignment="Top" Height="31" Width="90" FontSize="20" Click="btn_CloudBackup_Click"/>
 
         </Grid>

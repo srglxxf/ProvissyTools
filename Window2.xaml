@@ -11,54 +11,26 @@
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [0]}"
-                                                IsSelectionEnabled="True" AnimationSequence="FirstToLast">
-                <chartingToolkit:LineSeries.Background>
-                    <RadialGradientBrush Center="0.075,0.015" GradientOrigin="-0.1,-0.1" RadiusY="0.9" RadiusX="1.05">
-                        <GradientStop Color="#FFB9D6F7"/>
-                        <GradientStop Color="ForestGreen" Offset="1"/>
-                    </RadialGradientBrush>
-                </chartingToolkit:LineSeries.Background>
-            </chartingToolkit:LineSeries>
+                                                IsSelectionEnabled="True" AnimationSequence="FirstToLast"/>
             <chartingToolkit:LineSeries Name="Ammo"
                                                 Title="弹药"  
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [1]}"
-                                                IsSelectionEnabled="True" AnimationSequence="FirstToLast">
-                <chartingToolkit:LineSeries.Background>
-                    <RadialGradientBrush Center="0.075,0.015" GradientOrigin="-0.1,-0.1" RadiusY="0.9" RadiusX="1.05">
-                        <GradientStop Color="#FFFBB7B5"/>
-                        <GradientStop Color="#FF8A360F" Offset="1"/>
-                    </RadialGradientBrush>
-                </chartingToolkit:LineSeries.Background>
-            </chartingToolkit:LineSeries>
+                                                IsSelectionEnabled="True" AnimationSequence="FirstToLast"/>
             <chartingToolkit:LineSeries Name="Steel"
                                                 Title="钢材"  
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [2]}"
-                                                IsSelectionEnabled="True" AnimationSequence="FirstToLast">
-                <chartingToolkit:LineSeries.Background>
-                    <RadialGradientBrush Center="0.075,0.015" GradientOrigin="-0.1,-0.1" RadiusY="0.9" RadiusX="1.05">
-                        <GradientStop Color="#FFB8C0AC"/>
-                        <GradientStop Color="#FF808A87" Offset="1"/>
-                    </RadialGradientBrush>
-                </chartingToolkit:LineSeries.Background>
-            </chartingToolkit:LineSeries>
+                                                IsSelectionEnabled="True" AnimationSequence="FirstToLast"/>
             <chartingToolkit:LineSeries Name="Bauxite"
                                                 Title="铝土"  
                                                 DependentValuePath="countOfMat" 
                                                 IndependentValuePath="DateOF"
                                                 ItemsSource="{Binding [3]}"
                                                 IsSelectionEnabled="True"
-                                        AnimationSequence="FirstToLast">
-                <chartingToolkit:LineSeries.Background>
-                    <RadialGradientBrush Center="0.075,0.015" GradientOrigin="-0.1,-0.1" RadiusY="0.9" RadiusX="1.05">
-                        <GradientStop Color="#FFFDE79C"/>
-                        <GradientStop Color="#FFC76114" Offset="1"/>
-                    </RadialGradientBrush>
-                </chartingToolkit:LineSeries.Background>
-            </chartingToolkit:LineSeries>
+                                        AnimationSequence="FirstToLast"/>
 
         </chartingToolkit:Chart>
         

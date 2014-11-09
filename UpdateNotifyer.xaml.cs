@@ -27,7 +27,7 @@ namespace ProvissyTools
     /// </summary>
     public partial class UpdateNotifyer : Window
     {
-        private string keyWord = "#14110901#";
+        private string keyWord = "#14110801#";
         private System.Timers.Timer timer = new System.Timers.Timer(500000);
         private short chk;
         //public UpdateNotifyer()
