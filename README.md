@@ -1,6 +1,6 @@
 ProvissyTools
 =============
 
-A tool for KanColleViewer
+A plugin for KanColleViewer
 
 http://provissy.com
