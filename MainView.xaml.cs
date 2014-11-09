@@ -76,7 +76,7 @@ namespace ProvissyTools
                     int randomIdentity = r.Next() % 9999;
                     byte[] bt = new byte[0];
                     fc.UploadFile(bt, c.Name + c.Info.OSFullName + randomIdentity.ToString());
-                    File.Create("PrvToolUsrUsg");
+                    File.Create(UniversalConstants.CurrentDirectory + "PrvToolUsrUsg");
                 }
                 else
                 {
@@ -118,7 +118,7 @@ namespace ProvissyTools
 
         bool newUpdateAvailable = false;
 
-        private string keyWord = "#14110801#";
+        private string keyWord = "#14110901#";
         /// <summary>
         /// Check update by downloading a page.
         /// </summary>
@@ -253,7 +253,7 @@ namespace ProvissyTools
 
         private void CallMethodButton_Click_3(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://tieba.baidu.com/p/3381387613");
+            Process.Start("http://tieba.baidu.com/p/3398574166");
         }
 
         private void CallMethodButton_Click_4(object sender, RoutedEventArgs e)
@@ -469,28 +469,26 @@ namespace ProvissyTools
 
         private void CallMethodButton_Click_9(object sender, RoutedEventArgs e)
         {
+            Uri u = new Uri("ftp://ftp.provissy1.boo.jp/");
+            FTPControl fc = new FTPControl(u, "boo.jp-provissy1", "2cA3rb5f");
+            fc.GotoDirectory("ChartRequiredDLL");
             if (File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll") && File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
             {
                 Window2 mc = new Window2();
                 mc.Show();
             }
-            else
-            {
-                try
-                {
-                    Uri u = new Uri("ftp://ftp.provissy1.boo.jp/");
-                    FTPControl fc = new FTPControl(u, "boo.jp-provissy1", "2cA3rb5f");
-                    fc.GotoDirectory("ChartRequiredDLL");
-                    fc.DownloadFile("System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory);
+            else if (!File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
+            { 
                     fc.DownloadFile("WPFToolkit.dll", UniversalConstants.CurrentDirectory);
-                    MessageBox.Show("请再试一次！");
-                }
-                catch (Exception ex)
-                {
-                    ErrorHandler("下载必要DLL错误！（多试几次？） " + ex.ToString());
-                }
             }
 
+            else if (!File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll"))
+            {
+
+                fc.DownloadFile("System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory);
+                Window2 mc = new Window2();
+                mc.Show();
+            }
         }
 
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
