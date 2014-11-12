@@ -14,6 +14,7 @@
 			 xmlns:controls="clr-namespace:Grabacr07.KanColleViewer.Views.Controls;assembly=KanColleViewer"
 			 xmlns:viewModels="clr-namespace:Grabacr07.KanColleViewer.ViewModels;assembly=KanColleViewer"
 			 xmlns:models="clr-namespace:Grabacr07.KanColleViewer.Models;assembly=KanColleViewer"
+             xmlns:pt="clr-namespace:ProvissyTools"
 			 mc:Ignorable="d"
 			 d:DesignWidth="580"
 			 d:DesignHeight="350"
@@ -41,35 +42,52 @@
 
         <Grid x:Name="FunctionGrid">
             <metro2:CallMethodButton x:Name="funcbtn_Cal" Content="经验值计算器" HorizontalAlignment="Left" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_Cal_Click" Visibility="Hidden"/>
-            <metro2:CallMethodButton x:Name="funcbtn_Settings" Content="设置" HorizontalAlignment="Left" Margin="208,50,0,0" VerticalAlignment="Top" Height="50" Width="152" FontSize="36" Click="funcbtn_Settings_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_Settings" Content="设置" HorizontalAlignment="Left" Margin="208,50,0,0" VerticalAlignment="Top" Height="50" Width="152" FontSize="32" Click="funcbtn_Settings_Click" Visibility="Hidden"/>
             <metro2:CallMethodButton x:Name="funcbtn_Donate" Content="捐赠" HorizontalAlignment="Left" Margin="360,50,0,0" VerticalAlignment="Top" Height="50" Width="210" FontSize="36" Click="funcbtn_Donate_Click" Visibility="Hidden"/>
             <metro2:CallMethodButton x:Name="funcbtn_2014AkiEvent" Content="発動！渾作戦" HorizontalAlignment="Left" Margin="208,0,0,0" VerticalAlignment="Top" Height="50" Width="189" FontSize="24" Click="CallMethodButton_Click_4" Visibility="Hidden"/>
             <metro2:CallMethodButton x:Name="funcbtn_BugReport" Content="反馈BUG" HorizontalAlignment="Left" Margin="397,0,0,0" VerticalAlignment="Top" Height="50" Width="173" FontSize="24" Visibility="Hidden"/>
-            <metro2:CallMethodButton x:Name="btn_OpenFunc" Content="↓展开功能↓" Margin="248,0,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click" HorizontalAlignment="Left" Width="92"/>
-            <metro2:CallMethodButton x:Name="btn_ClickToClose" Content="↑关闭↑" Margin="248,99,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btn_ClickToClose_Click" Width="92" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="btn_OpenFunc" Content="↓展开功能↓" Margin="248,0,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click" HorizontalAlignment="Left" Width="100"/>
+            <metro2:CallMethodButton x:Name="btn_ClickToClose" Content="↑关闭↑" Margin="248,150,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="btn_ClickToClose_Click" Width="92" Visibility="Hidden"/>
             <metro2:CallMethodButton x:Name="btn_BackToHomePage" Content="←回到主页" HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" Click="btn_BackToHomePage_Click" Visibility="Hidden"/>
             <metro2:CallMethodButton x:Name="funcbtn_OpenDataView" Content="查看统计数据" HorizontalAlignment="Left" Margin="0,50,0,0" VerticalAlignment="Top" Height="50" Width="208" FontSize="24" Click="funcbtn_OpenDataView_Click" Visibility="Hidden"/>
-            <Button Content="Button" HorizontalAlignment="Left" Margin="150,105,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" Visibility="Hidden"/>
+            <Button Content="Button" HorizontalAlignment="Left" Margin="150,0,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_OpenTwitter" Content="Twitter" HorizontalAlignment="Left" Margin="0,100,0,0" VerticalAlignment="Top" Height="50" Width="160" FontSize="36" Click="funcbtn_OpenTwitter_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_OpenWiki" Content="Wiki" HorizontalAlignment="Left" Margin="160,100,0,0" VerticalAlignment="Top" Height="50" Width="140" FontSize="36" Click="funcbtn_OpenWiki_Click" Visibility="Hidden"/>
+            <metro2:CallMethodButton x:Name="funcbtn_Counter" Content="出击、任务计数器" HorizontalAlignment="Left" Margin="300,100,0,0" VerticalAlignment="Top" Height="50" Width="240" FontSize="24" Visibility="Hidden" Click="funcbtn_Counter_Click"/>
+
+        </Grid>
+        
+        <Grid x:Name="Counter" Visibility="Hidden">
+            <metro:PromptTextBox HorizontalAlignment="Left" Margin="100,115,0,0" TextWrapping="Wrap" Text="{Binding pt:SrotieResult}" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="10,115,0,0" Text="出击次数" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="3,170,0,0" Text="进BOSS次数" VerticalAlignment="Top"/>
+            <metro:PromptTextBox HorizontalAlignment="Left" Margin="100,159,0,0" TextWrapping="Wrap" Text="{Binding pt:BossSrotieResult}" VerticalAlignment="Top"/>
+            <metro2:CallMethodButton x:Name="btn_Counter_Refresh" Content="CallMethodButton" HorizontalAlignment="Left" Margin="235,80,0,0" VerticalAlignment="Top"/>
+        </Grid>
+
+        <Grid x:Name="BrowserPage" Visibility="Hidden">
+            <WebBrowser x:Name="wb_WebBrowser" HorizontalAlignment="Left" Height="315" Margin="0,35,0,0" VerticalAlignment="Top" Width="580"/>
+
         </Grid>
 
         <Grid x:Name="ErrorHandle" Height="350" VerticalAlignment="Top" Visibility="Hidden">
             <TextBlock Margin="10,50,20,0" Text="很抱歉！程序出现了问题！" VerticalAlignment="Top" FontSize="36" TextAlignment="Center"/>
             <TextBox x:Name="ErrorMessageTextBox" Margin="10,96,10,10" TextWrapping="Wrap" Text="" IsReadOnly="True"/>
-
         </Grid>
 
 
-        <Grid x:Name="WelcomePage">
-            <TextBlock Margin="10,100,10,0" VerticalAlignment="Top" FontSize="36" TextAlignment="Center" Foreground="White"><Run Text="欢迎使用 Provissy Tools ！"/><LineBreak/><Run Text="Provissy Toolsへようこそ！"/></TextBlock>
-            <Label Content="Version1.1. Written By @Provissy."  VerticalAlignment="Bottom" HorizontalAlignment="Right"  Margin="0,0,10,0" Foreground="White"/>
-            <metro2:CallMethodButton x:Name="chkUpdateButton" Content="检查更新" Margin="0,0,231,0" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="66" Click="CallMethodButton_Click_1"/>
-            <Label Content="出击掉落统计，资源统计，建造、开发统计功能后台运行（结果保存在KCV目录，亦可在'统计'中查看）" HorizontalAlignment="Right" Margin="0,0,0,22" VerticalAlignment="Bottom" Foreground="White"/>
-            <metro2:CallMethodButton Content="捐赠！" HorizontalAlignment="Right" Margin="0,0,302,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_2"/>
-            <Label Content="改进UI、开发记录 点击访问 provissy.com 查看更新日志及更多信息" HorizontalAlignment="Right" Margin="0,0,0,48" VerticalAlignment="Bottom" Foreground="White" MouseDown="Label_MouseDown" Cursor="Hand"/>
-            <metro2:CallMethodButton Content="前往贴吧页面" HorizontalAlignment="Right" Margin="0,0,361,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_3"/>
-            <metro2:CallMethodButton Content="更新日志" HorizontalAlignment="Right" Margin="0,0,456,0" VerticalAlignment="Bottom" Width="76" Click="CallMethodButton_Click_8"/>
+        <Grid x:Name="WelcomePage" Visibility="Hidden">
+            <TextBlock x:Name="tbl_Introdution" Margin="10,100,10,0" VerticalAlignment="Top" FontSize="36" TextAlignment="Center" Foreground="White"><Run Text="欢迎使用 Provissy Tools ！"/><LineBreak/><Run Text="Provissy Toolsへようこそ！"/></TextBlock>
+            <Label Content="Version1.3. Written By @Provissy."  VerticalAlignment="Bottom" HorizontalAlignment="Right"  Margin="0,0,10,0" Foreground="White"/>
+            <metro2:CallMethodButton x:Name="chkUpdateButton" Content="检查更新" Margin="0,0,231,0" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="94" Click="CallMethodButton_Click_1"/>
+            <Label x:Name="lb_StatisticsIntrodution" Content="出击掉落统计，资源统计，建造、开发统计功能后台运行（结果保存在KCV目录，亦可在'统计'中查看）" HorizontalAlignment="Right" Margin="0,0,0,22" VerticalAlignment="Bottom" Foreground="White"/>
+            <metro2:CallMethodButton x:Name="btn_Donate" Content="捐赠！" HorizontalAlignment="Right" Margin="0,0,330,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_2" Width="61"/>
+            <Label x:Name="lb_UpdateInformation" Content="修复资源统计图颜色错误 点击访问 provissy.com 查看更新日志及更多信息" HorizontalAlignment="Right" Margin="0,0,0,48" VerticalAlignment="Bottom" Foreground="White" MouseDown="Label_MouseDown" Cursor="Hand"/>
+            <metro2:CallMethodButton Content="前往贴吧页面" HorizontalAlignment="Right" Margin="0,0,396,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_3"/>
+            <metro2:CallMethodButton x:Name="btn_UpdateLog" Content="更新日志" HorizontalAlignment="Right" Margin="0,0,491,0" VerticalAlignment="Bottom" Width="79" Click="CallMethodButton_Click_8"/>
             <Rectangle Fill="#FFFF3A00" Height="30" Margin="0,50,0,0" Stroke="Black" VerticalAlignment="Top"/>
-            <TextBlock Margin="0,50,0,0" Text="V1.X正式版本！秋活在即，天气转凉，大家注意好身体！" VerticalAlignment="Top" Height="30" TextAlignment="Center" FontSize="20"/>
+            <TextBlock x:Name="tbl_MainState" Margin="0,50,0,0" Text="V1.35！秋活在即，天气转凉，大家注意好身体！" VerticalAlignment="Top" Height="30" TextAlignment="Center" FontSize="20"/>
+            <Button x:Name="funcbtn_SwitchToEnglish" Content="Switch To English" HorizontalAlignment="Left" Margin="400,245,0,0" VerticalAlignment="Top" Width="160" Click="funcbtn_SwitchToEnglish_Click"/>
 
         </Grid>
 
@@ -86,8 +104,8 @@
             <CheckBox Content="打开声音提醒（不可用）。" IsChecked="{Binding EnableSoundNotify}" HorizontalAlignment="Left" Margin="105,120,0,0" VerticalAlignment="Top"/>
             <CheckBox Content="无功能" HorizontalAlignment="Left" Margin="105,140,0,0" VerticalAlignment="Top"/>
             <CheckBox Content="关闭更新提醒 （不可用）" HorizontalAlignment="Left" Margin="105,162,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
-            <CheckBox Content="打开自动更新提醒" HorizontalAlignment="Left" Margin="105,98,0,0" VerticalAlignment="Top" Width="156" IsChecked="{Binding EnableAutoUpdateNotify}"/>
-            <Button Content="关闭KCV" HorizontalAlignment="Left" Margin="105,184,0,0" VerticalAlignment="Top" Width="105" Click="Button_Click_2"/>
+            <CheckBox x:Name="btn_AutoCheckUpdate" Content="打开自动更新提醒" HorizontalAlignment="Left" Margin="105,98,0,0" VerticalAlignment="Top" Width="250" IsChecked="{Binding EnableAutoUpdateNotify}"/>
+            <Button x:Name="btn_CloseKCV" Content="关闭KCV" HorizontalAlignment="Left" Margin="105,184,0,0" VerticalAlignment="Top" Width="105" Click="Button_Click_2"/>
 
         </Grid>
 
@@ -121,10 +139,10 @@
             <metro2:CallMethodButton Content="内部测试功能，&#xD;&#xA;点这里反馈问题" HorizontalAlignment="Left" Margin="170,311,0,0" VerticalAlignment="Top" Height="39" Width="125" Click="CallMethodButton_Click_10"/>
             <TextBox x:Name="tb_BBS_Comments" Margin="300,35,0,0" TextWrapping="Wrap" Text="揭示板测试" IsReadOnly="True" Visibility="Hidden"/>
             <TextBox x:Name="tb_CommentToSend" HorizontalAlignment="Left" Height="86" Margin="10,170,0,0" TextWrapping="Wrap" Text="此处输入要发布的内容" VerticalAlignment="Top" Width="285" Visibility="Hidden"/>
-            <Label Content="揭示板测试β3.0" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Foreground="White" FontSize="36" Width="285"/>
+            <Label x:Name="lb_BBSTestIntrodution" Content="揭示板测试β3.0" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Foreground="White" FontSize="36" Width="285"/>
             <TextBox x:Name="tb_BBS_Username" HorizontalAlignment="Left" Height="23" Margin="10,187,0,0" TextWrapping="Wrap" Text="输入你的名字" VerticalAlignment="Top" Width="285"/>
-            <metro2:CallMethodButton x:Name="btn_BBS_SendComment" Content="发表新回复" HorizontalAlignment="Left" Margin="70,311,0,0" VerticalAlignment="Top" Height="39" Width="100" Click="btn_BBS_SendComment_Click" FontSize="16" IsEnabled="False"/>
-            <metro2:CallMethodButton x:Name="btn_BBS_GetComments" Content="刷新" HorizontalAlignment="Left" Margin="10,311,0,0" VerticalAlignment="Top" Width="60" Click="btn_BBS_GetComments_Click" Height="39" FontSize="16" IsEnabled="False"/>
+            <metro2:CallMethodButton x:Name="btn_BBS_SendComment" Content="发表新回复" HorizontalAlignment="Left" Margin="85,311,0,0" VerticalAlignment="Top" Height="39" Width="85" Click="btn_BBS_SendComment_Click" FontSize="16" IsEnabled="False"/>
+            <metro2:CallMethodButton x:Name="btn_BBS_GetComments" Content="刷新" HorizontalAlignment="Left" Margin="10,311,0,0" VerticalAlignment="Top" Width="75" Click="btn_BBS_GetComments_Click" Height="39" FontSize="16" IsEnabled="False"/>
             <ScrollViewer x:Name="sv_BBS_ForRtbComment" Margin="300,30,0,0" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" VerticalAlignment="Top" Height="320">
                 <RichTextBox x:Name="rtb_BBS_Comment" Block.LineHeight="8" >
                     <FlowDocument>
@@ -136,6 +154,12 @@
                         </Paragraph>
                         <Paragraph>
                             <Run Text="选中文字并点击相应按钮来改变样式"/>
+                        </Paragraph>
+                        <Paragraph>
+                            <Run Text="This is a micro BBS, click &quot;Refresh&quot; to get messages."/>
+                        </Paragraph>
+                        <Paragraph>
+                            <Run Text="Select text and click &quot;red&quot; or &quot;zoom in&quot; to change the style of text."/>
                         </Paragraph>
                     </FlowDocument>
                 </RichTextBox>
@@ -149,11 +173,11 @@
                     </FlowDocument>
                 </RichTextBox>
             </ScrollViewer>
-            <Button Content="增大字号" HorizontalAlignment="Left" Margin="220,158,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
-            <Button x:Name="btn_BBS_SetColorToRed" Content="红色" HorizontalAlignment="Left" Margin="160,158,0,0" VerticalAlignment="Top" Width="55" Click="btn_BBS_SetColorToRed_Click"/>
+            <Button x:Name="btn_BBS_ZoomIn" Content="增大字号" HorizontalAlignment="Left" Margin="200,158,0,0" VerticalAlignment="Top" Width="95" Click="Button_Click_1"/>
+            <Button x:Name="btn_BBS_SetColorToRed" Content="红色" HorizontalAlignment="Left" Margin="140,158,0,0" VerticalAlignment="Top" Width="60" Click="btn_BBS_SetColorToRed_Click"/>
             <CheckBox x:Name="BBS_AutoRefreshComments" Content="自动刷新（30秒一次）" HorizontalAlignment="Left" Margin="365,8,0,0" VerticalAlignment="Top" Width="152" Checked="BBS_AutoRefreshComments_Checked"/>
             <Label x:Name="lb_BBS_ShowState" Content="状态表示" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Foreground="White"/>
-            <metro2:CallMethodButton x:Name="btn_ReInitialize" Content="连接至服务器" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Click="btn_ReInitialize_Click"/>
+            <metro2:CallMethodButton x:Name="btn_ReInitialize" Content="连接至服务器" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Click="btn_ReInitialize_Click" Width="130"/>
             <metro2:CallMethodButton x:Name="btn_AkiEvent_MapViewer" Content="查看活动图余剩出击场数" HorizontalAlignment="Left" Margin="10,108,0,0" VerticalAlignment="Top" Height="44" Width="285" FontSize="19" Click="btn_AkiEvent_MapViewer_Click"/>
         </Grid>
 
@@ -189,13 +213,13 @@
             <TextBlock x:Name="tbl_Backup_Password" HorizontalAlignment="Left" Margin="55,90,0,0" Text="密码" VerticalAlignment="Top" FontSize="14"/>
             <PasswordBox x:Name="psd_Backup_Password" HorizontalAlignment="Left" Margin="101,90,0,0" VerticalAlignment="Top" Width="120"/>
             <Button x:Name="btn_Backup_CreateAccount" Content="注册账户" HorizontalAlignment="Left" Margin="246,52,0,0" VerticalAlignment="Top" Width="115" Height="58" FontSize="24" Click="btn_Backup_CreateAccount_Click"/>
-            <Label x:Name="lb_Backup_Username" Content="" HorizontalAlignment="Left" Margin="462,38,0,0" VerticalAlignment="Top" Foreground="White" FontSize="18"/>
-            <metro2:CallMethodButton x:Name="btn_Backup_CloudToLocal" Content="云端→本地" HorizontalAlignment="Left" Margin="140,193,0,0" VerticalAlignment="Top" FontSize="24" Click="btn_Backup_CloudToLocal_Click"/>
-            <metro2:CallMethodButton x:Name="btn_Backup_LocalToCloud" Content="本地→云端" HorizontalAlignment="Left" Margin="308,193,0,0" VerticalAlignment="Top" FontSize="24" Click="btn_Backup_LocalToCloud_Click"/>
+            <Label x:Name="lb_Backup_Username" Content="" HorizontalAlignment="Left" Margin="465,38,0,0" VerticalAlignment="Top" Foreground="White" FontSize="18"/>
+            <metro2:CallMethodButton x:Name="btn_Backup_CloudToLocal" Content="云端→本地" HorizontalAlignment="Left" Margin="68,193,0,0" VerticalAlignment="Top" FontSize="24" Click="btn_Backup_CloudToLocal_Click" Width="197"/>
+            <metro2:CallMethodButton x:Name="btn_Backup_LocalToCloud" Content="本地→云端" HorizontalAlignment="Left" Margin="294,193,0,0" VerticalAlignment="Top" FontSize="24" Click="btn_Backup_LocalToCloud_Click" Width="206"/>
             <Label x:Name="lb_Backup_Introdution" Content="同步或注册时KCV会停止响应，请不要关闭KCV，稍等一会儿。" Margin="0,153,0,0" VerticalAlignment="Top" FontSize="20" Foreground="White"/>
             <metro2:CallMethodButton Content="关闭" HorizontalAlignment="Left" Margin="485,0,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click_11"/>
-            <metro2:CallMethodButton Content="用户名为空？检查是否注册成功" HorizontalAlignment="Left" Margin="384,80,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click_12"/>
-            <Label Content="用户名：" HorizontalAlignment="Left" Margin="388,39,0,0" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+            <metro2:CallMethodButton Content="用户名为空？检查是否注册成功" HorizontalAlignment="Left" Margin="366,84,0,0" VerticalAlignment="Top" Click="CallMethodButton_Click_12"/>
+            <Label x:Name="lb_Bkp_UsernameLabel" Content="用户名：" HorizontalAlignment="Left" Margin="366,38,0,0" VerticalAlignment="Top" Foreground="White" FontSize="16" Width="82"/>
 
         </Grid>
 
@@ -214,7 +238,7 @@
         <Grid x:Name="ExpCal" Visibility="Hidden" >
 
             <StackPanel Margin="0,26,0,-17">
-                <metro:PromptComboBox Margin="15,8,0,8"
+                <metro:PromptComboBox x:Name="pcb_ShipGirlList" Margin="15,8,0,8"
 							  HorizontalAlignment="Left"
 							  Prompt="选择舰娘"
 							  ItemsSource="{Binding Ships}"
@@ -246,7 +270,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock HorizontalAlignment="Left"
+                        <TextBlock x:Name="tbl_CurrentLevel" HorizontalAlignment="Left"
 						   Margin="2,8,0,34"
 						   Text="当前等级" Grid.RowSpan="2" />
 
@@ -268,7 +292,7 @@
 									 HorizontalAlignment="Left"
 									 IsReadOnly="True" />
 
-                        <TextBlock HorizontalAlignment="Left"
+                        <TextBlock x:Name="tbl_TargetLevel" HorizontalAlignment="Left"
 						   Margin="2,8,0,-8"
 						   Grid.Column="0"
 						   Grid.Row="1"
@@ -316,7 +340,7 @@
 									  MinWidth="50"
 									  Grid.Column="1" />
 
-                        <TextBlock HorizontalAlignment="Left"
+                        <TextBlock x:Name="tbl_Result" HorizontalAlignment="Left"
 						   Margin="8,8,0,-8"
 						   Grid.Column="2"
 						   Text="结果" />
@@ -349,7 +373,7 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
 
-                        <TextBlock HorizontalAlignment="Left"
+                        <TextBlock x:Name="tbl_Exp" HorizontalAlignment="Left"
 						   Margin="12,14,0,27"
 						   Text="出击经验值" Grid.ColumnSpan="2" Width="108" />
 
@@ -371,7 +395,7 @@
 									 HorizontalAlignment="Left"
 									 IsReadOnly="True" Grid.RowSpan="2" Width="70" />
 
-                        <TextBlock HorizontalAlignment="Left"
+                        <TextBlock x:Name="tbl_Remaining" HorizontalAlignment="Left"
 						   Margin="10,28,0,26"
 						   Grid.Row="1"
 						   Text="余剩经验值" />
@@ -385,15 +409,15 @@
 									 MinWidth="70"
 									 HorizontalAlignment="Left"
 									 IsReadOnly="True" />
-                        <TextBlock TextWrapping="Wrap" Text="余剩场数" Margin="12,51,30,63" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+                        <TextBlock x:Name="tbl_E" TextWrapping="Wrap" Text="余剩场数" Margin="12,51,30,63" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
 
                     </Grid>
 
                     <StackPanel Grid.Column="1"
 						Grid.RowSpan="2"
 						VerticalAlignment="Center" Margin="0,34,308,33">
-                        <CheckBox Content="旗舰" IsChecked="{Binding IsFlagship}" Height="17" Margin="8,0,-31,10"/>
-                        <CheckBox Content="MVP" IsChecked="{Binding IsMVP}" Height="17" Margin="8,0,-51,10"/>
+                        <CheckBox x:Name="cb_Flagship" Content="旗舰" IsChecked="{Binding IsFlagship}" Height="17" Margin="8,0,-31,10"/>
+                        <CheckBox x:Name="cb_MVP" Content="MVP" IsChecked="{Binding IsMVP}" Height="17" Margin="8,0,-51,10"/>
                     </StackPanel>
 
                 </Grid>

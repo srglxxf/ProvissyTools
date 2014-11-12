@@ -41,10 +41,17 @@ namespace ProvissyTools
             proxy.api_req_kousyou_createship.TryParse<kcsapi_createship>().Subscribe(x => this.CreateShip(x.Request));
             proxy.api_get_member_kdock.TryParse<kcsapi_kdock[]>().Subscribe(x => this.KDock(x.Data));
             proxy.api_req_sortie_battleresult.TryParse<kcsapi_battleresult>().Subscribe(x => this.BattleResult(x.Data));
+            //proxy.api_req_sortie_battleresult.TryParse<kcsapi_map_start>().Subscribe(x => this.MapStart(x.Data));
             proxy.api_get_member_material.TryParse<kcsapi_material[]>().Subscribe(x => this.MaterialsHistory(x.Data));
             proxy.api_req_hokyu_charge.TryParse<kcsapi_charge>().Subscribe(x => this.MaterialsHistory(x.Data.api_material));
             proxy.api_req_kousyou_destroyship.TryParse<kcsapi_destroyship>().Subscribe(x => this.MaterialsHistory(x.Data.api_material));
         }
+
+        //private void MapStart(kcsapi_map_start k)
+        //{
+        //    System.Windows.MessageBox.Show(k.api_rashin_flg.ToString());
+        //    System.Windows.MessageBox.Show(k.api_rashin_id.ToString());
+        //}
 
         private void CreateItem(kcsapi_createitem item, NameValueCollection req)
         {

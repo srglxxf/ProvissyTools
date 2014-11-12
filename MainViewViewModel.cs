@@ -421,7 +421,8 @@ namespace ProvissyTools
 			protected set { throw new NotImplementedException(); }
 		}
 
-        public Logger Logger { get; private set; }    
+        public Logger Logger { get; private set; }
+        public Counter Counter { get; private set; }
         //Constructor.
 		public MainViewViewModel()
 		{
@@ -447,6 +448,7 @@ namespace ProvissyTools
 			SelectedResult = Results.FirstOrDefault();
 			this.Update();
             this.Logger = new Logger(KanColleClient.Current.Proxy);   //activate logger
+            this.Counter = new Counter(KanColleClient.Current.Proxy);   //activate logger
 
 		}
 

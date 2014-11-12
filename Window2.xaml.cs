@@ -33,26 +33,30 @@ namespace ProvissyTools
 
 
 
-        private static Style GetNewDataPointStyle(int R,int G,int B)
-        {
-            Random random = new Random();
-            Color background = Color.FromRgb((byte)R,
-                                             (byte)G,
-                                             (byte)B);
-            Style style = new Style(typeof(DataPoint));
-           Setter st1 = new Setter(DataPoint.BackgroundProperty,
-                                        new SolidColorBrush(background));
-            Setter st2 = new Setter(DataPoint.BorderBrushProperty,
-                                        new SolidColorBrush(Colors.White));
-            Setter st3 = new Setter(DataPoint.BorderThicknessProperty, new Thickness(0.1));
+        //private static Style GetNewDataPointStyle(int R,int G,int B)
+        //{
+        //    Random random = new Random();
+        //    Color background = Color.FromRgb((byte)R,
+        //                                     (byte)G,
+        //                                     (byte)B);
+        //    Style style = new Style(typeof(DataPoint));
+        //    Setter st0 = new Setter(LineDataPoint.BackgroundProperty, new SolidColorBrush(background));
+        //    Setter st1 = new Setter(DataPoint.BackgroundProperty,
+        //                                new SolidColorBrush(background));
+        //    Setter st2 = new Setter(DataPoint.BorderBrushProperty,
+        //                                new SolidColorBrush(Colors.White));
+        //    Setter st3 = new Setter(DataPoint.BorderThicknessProperty, new Thickness(0.1));
 
-            Setter st4 = new Setter(DataPoint.TemplateProperty, null);
-            style.Setters.Add(st1);
-            style.Setters.Add(st2);
-            style.Setters.Add(st3);
-            style.Setters.Add(st4);
-            return style;
-        }
+        //    Setter st4 = new Setter(DataPoint.TemplateProperty, null);
+        //    Setter st5 = new Setter(LineSeries.BackgroundProperty, new SolidColorBrush(background));
+        //    style.Setters.Add(st0);
+        //    style.Setters.Add(st1);
+        //    style.Setters.Add(st2);
+        //    style.Setters.Add(st3);
+        //    style.Setters.Add(st4);
+        //    style.Setters.Add(st5);
+        //    return style;
+        //}
 
         private void loadMatChart()
         {
@@ -66,14 +70,14 @@ namespace ProvissyTools
             steelLine.ItemsSource = loadSteel(loadedList);
             LineSeries bauxiteLine = LineChart1.Series[3] as LineSeries;
             bauxiteLine.ItemsSource = loadBauxite(loadedList);
-            Style dataPointStyle1 = GetNewDataPointStyle(34,139,34);
-            Style dataPointStyle2 = GetNewDataPointStyle(138,54,15);
-            Style dataPointStyle3 = GetNewDataPointStyle(128,138,135);
-            Style dataPointStyle4 = GetNewDataPointStyle(199,97,20);
-            fuelLine.DataPointStyle = dataPointStyle1;
-            ammoLine.DataPointStyle = dataPointStyle2;
-            steelLine.DataPointStyle = dataPointStyle3;
-            bauxiteLine.DataPointStyle = dataPointStyle4;
+            //Style dataPointStyle1 = GetNewDataPointStyle(34,139,34);
+            //Style dataPointStyle2 = GetNewDataPointStyle(138,54,15);
+            //Style dataPointStyle3 = GetNewDataPointStyle(128,138,135);
+            //Style dataPointStyle4 = GetNewDataPointStyle(199,97,20);
+            //fuelLine.DataPointStyle = dataPointStyle1;
+            //ammoLine.DataPointStyle = dataPointStyle2;
+            //steelLine.DataPointStyle = dataPointStyle3;
+            //bauxiteLine.DataPointStyle = dataPointStyle4;
             LineChart1.Title = "资源统计图";
             });
             this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);

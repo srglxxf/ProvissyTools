@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Data;
 using System.Data.Odbc;
+using Grabacr07.KanColleWrapper.Models.Raw;
 
 namespace ProvissyTools
 {
@@ -68,8 +69,8 @@ namespace ProvissyTools
             {
                 if (!File.Exists("PrvToolUsrUsg"))
                 {
-                    Uri ur = new Uri("ftp://ftp.provissy1.boo.jp/");
-                    FTPControl fc = new FTPControl(ur, "boo.jp-provissy1", "2cA3rb5f");
+                    Uri ur = new Uri("ftp://m50.coreserver.jp/");
+                    FTPControl fc = new FTPControl(ur, "provissy", "qkMWpEJkvW5d");
                     fc.GotoDirectory("User_Usage_Data");
                     Microsoft.VisualBasic.Devices.Computer c = new Microsoft.VisualBasic.Devices.Computer();
                     Random r = new Random();
@@ -118,7 +119,7 @@ namespace ProvissyTools
 
         bool newUpdateAvailable = false;
 
-        private string keyWord = "#14110901#";
+        private string keyWord = "#14111202#";
         /// <summary>
         /// Check update by downloading a page.
         /// </summary>
@@ -182,26 +183,26 @@ namespace ProvissyTools
                         Match mat = reg.Match(allFile);
                         if (mat.Success)
                         {
-                            MessageBox.Show("已是最新版本！");
+                            MessageBox.Show("Current version is up-to-date！");
                         }
                         else
                         {
-                            MessageBox.Show("新版本可用！");      //Success.
-                            chkUpdateButton.Content = "安装更新！";
+                            MessageBox.Show("New version available！");      //Success.
+                            chkUpdateButton.Content = "Install";
                             newUpdateAvailable = true;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    ErrorHandler("更新检查失败！重新检查试试？错误信息：" + ex);
+                    ErrorHandler("Failed, try again？Error Message：" + ex);
                 }
             }
             else
             {
                 Thread t = new Thread(fileDownloader);
                 t.Start();
-                chkUpdateButton.Content = "更新中...";
+                chkUpdateButton.Content = "Updating...";
             }
         }
 
@@ -226,8 +227,8 @@ namespace ProvissyTools
                 {
                     File.Delete(UniversalConstants.CurrentDirectory + @"\UpdaterForPrvTools.exe");
                 }
-                Uri u = new Uri("ftp://ftp.provissy1.boo.jp/");
-                FTPControl fc = new FTPControl(u, "boo.jp-provissy1", "2cA3rb5f");
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
                 fc.GotoDirectory("UpdaterForPrvTools_Download");
                 fc.DownloadFile("UpdaterForPrvTools.exe", UniversalConstants.CurrentDirectory);
                 Process.Start("UpdaterForPrvTools.exe");
@@ -275,13 +276,16 @@ namespace ProvissyTools
         {
             btn_OpenFunc.Visibility = Visibility.Hidden;
             btn_BackToHomePage.Visibility = Visibility.Hidden;
-            //Functions
+            //Function buttons
             funcbtn_2014AkiEvent.Visibility = Visibility.Visible;
             funcbtn_BugReport.Visibility = Visibility.Visible;
             funcbtn_Cal.Visibility = Visibility.Visible;
             funcbtn_OpenDataView.Visibility = Visibility.Visible;
             funcbtn_Settings.Visibility = Visibility.Visible;
             funcbtn_Donate.Visibility = Visibility.Visible;
+            funcbtn_OpenTwitter.Visibility = Visibility.Visible;
+            funcbtn_OpenWiki.Visibility = Visibility.Visible;
+            funcbtn_Counter.Visibility = Visibility.Visible;
             //End
             btn_ClickToClose.Visibility = Visibility.Visible;
         }
@@ -293,13 +297,17 @@ namespace ProvissyTools
 
         private void closeFuncTab()
         {
-            //Functions.
+            //Functions buttons
             funcbtn_2014AkiEvent.Visibility = Visibility.Hidden;
             funcbtn_BugReport.Visibility = Visibility.Hidden;
             funcbtn_Cal.Visibility = Visibility.Hidden;
             funcbtn_OpenDataView.Visibility = Visibility.Hidden;
             funcbtn_Settings.Visibility = Visibility.Hidden;
             funcbtn_Donate.Visibility = Visibility.Hidden;
+            funcbtn_OpenTwitter.Visibility = Visibility.Hidden;
+            funcbtn_OpenWiki.Visibility = Visibility.Hidden;
+            funcbtn_Counter.Visibility = Visibility.Hidden;
+
             // End.
             btn_ClickToClose.Visibility = Visibility.Hidden;
             btn_BackToHomePage.Visibility = Visibility.Visible;
@@ -317,6 +325,7 @@ namespace ProvissyTools
             ErrorHandle.Visibility = Visibility.Hidden;
             StatisticsBackup.Visibility = Visibility.Hidden;
             EventMapViewer.Visibility = Visibility.Hidden;
+            BrowserPage.Visibility = Visibility.Hidden;
         }
 
         private void funcbtn_Cal_Click(object sender, RoutedEventArgs e)
@@ -324,6 +333,23 @@ namespace ProvissyTools
             closeAllTabs();
             closeFuncTab();
             ExpCal.Visibility = Visibility.Visible;
+        }
+
+        private void funcbtn_OpenTwitter_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            wb_WebBrowser.Source = (new Uri("https://twitter.com/KanColle_STAFF"));
+            BrowserPage.Visibility = Visibility.Visible;
+        }
+
+        private void funcbtn_OpenWiki_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab(); 
+            //WebProxy wp = new WebProxy("localhost", 8888);
+            wb_WebBrowser.Source = (new Uri("http://wikiwiki.jp/kancolle/"));
+            BrowserPage.Visibility = Visibility.Visible;
         }
 
         private void funcbtn_OpenDataView_Click(object sender, RoutedEventArgs e)
@@ -469,8 +495,8 @@ namespace ProvissyTools
 
         private void CallMethodButton_Click_9(object sender, RoutedEventArgs e)
         {
-            Uri u = new Uri("ftp://ftp.provissy1.boo.jp/");
-            FTPControl fc = new FTPControl(u, "boo.jp-provissy1", "2cA3rb5f");
+            Uri u = new Uri("ftp://m50.coreserver.jp/");
+            FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
             fc.GotoDirectory("ChartRequiredDLL");
             if (File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll") && File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
             {
@@ -501,8 +527,8 @@ namespace ProvissyTools
             try
             {
                 string controlName = ((Label)sender).Content.ToString();   //获取引发该方法的控件的名称。
-                Uri u = new Uri("ftp://ftp.provissy.boo.jp/");
-                FTPControl fc = new FTPControl(u, "boo.jp-provissy", "mn3xP2w6");
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
                 fc.GotoDirectory("PrvToolsCommCenter");
                 byte[] bt = fc.DownloadFile(controlName);
                 System.IO.Stream ss = new System.IO.MemoryStream(bt);
@@ -525,8 +551,8 @@ namespace ProvissyTools
         private void btn_RefreshMessageList_Click(object sender, RoutedEventArgs e)
         {
             //userMessageScrollViewer.Content = userMessageStackPanel;
-            Uri u = new Uri("ftp://ftp.provissy.boo.jp/");
-            FTPControl fc = new FTPControl(u, "boo.jp-provissy", "mn3xP2w6");
+            Uri u = new Uri("ftp://m50.coreserver.jp/");
+            FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
             fc.GotoDirectory("PrvToolsCommCenter");
             foreach (FileStruct fileData in fc.ListFiles())
             {
@@ -547,8 +573,8 @@ namespace ProvissyTools
         {
             try
             {
-                Uri u = new Uri("ftp://ftp.provissy.boo.jp/");
-                FTPControl fc = new FTPControl(u, "boo.jp-provissy", "mn3xP2w6");
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
                 if (!fc.FileExist(tb_TitleOfContent.Text))
                 {
                     fc.GotoDirectory("PrvToolsCommCenter");
@@ -722,7 +748,7 @@ namespace ProvissyTools
 
 
 
-        FTPControl FTP_FOR_BBS = new FTPControl(new Uri("ftp://ftp.provissy1.boo.jp/"), "boo.jp-provissy1", "2cA3rb5f");
+        FTPControl FTP_FOR_BBS = new FTPControl(new Uri("ftp://m50.coreserver.jp/"), "provissy", "qkMWpEJkvW5d");
 
         //private void Button_Click(object sender, RoutedEventArgs e)
         //{
@@ -852,8 +878,8 @@ namespace ProvissyTools
                         w.Close();
                     }
 
-                    Uri ur = new Uri("ftp://ftp.provissy1.boo.jp/");
-                    FTPControl fc = new FTPControl(ur, "boo.jp-provissy1", "2cA3rb5f");
+                    Uri ur = new Uri("ftp://m50.coreserver.jp/");
+                    FTPControl fc = new FTPControl(ur, "provissy", "qkMWpEJkvW5d");
                     fc.GotoDirectory("User_Statistics_Data");
                     if (fc.FileExist(tb_Backup_Username.Text))
                     {
@@ -887,8 +913,8 @@ namespace ProvissyTools
         {
             try
             {
-                Uri u = new Uri("ftp://ftp.provissy1.boo.jp/");
-                FTPControl fc = new FTPControl(u, "boo.jp-provissy1", "2cA3rb5f");
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
                 fc.GotoDirectory("User_Statistics_Data");
                 string l = UniversalConstants.CurrentDirectory;
                 if (File.Exists(l + "ItemBuildLog.csv"))
@@ -926,8 +952,8 @@ namespace ProvissyTools
         {
             try
             {
-                Uri u = new Uri("ftp://ftp.provissy1.boo.jp/");
-                FTPControl fc = new FTPControl(u, "boo.jp-provissy1", "2cA3rb5f");
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
                 fc.GotoDirectory("User_Statistics_Data");
                 string l = UniversalConstants.CurrentDirectory;
                 if (File.Exists(l + "ItemBuildLog.csv"))
@@ -968,8 +994,8 @@ namespace ProvissyTools
         {
             try
             {
-                Uri u = new Uri("ftp://ftp.provissy1.boo.jp/");
-                FTPControl fc = new FTPControl(u, "boo.jp-provissy1", "2cA3rb5f");
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
                 fc.GotoDirectory("User_Statistics_Data");
                 StreamReader r = new StreamReader(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg");
                 string l = r.ReadLine();
@@ -1015,6 +1041,56 @@ namespace ProvissyTools
             closeAllTabs();
             closeFuncTab();
             EventMapViewer.Visibility = Visibility.Visible;
+        }
+
+        private void funcbtn_SwitchToEnglish_Click(object sender, RoutedEventArgs e)
+        {
+            chkUpdateButton.Content = "ChkUpdate";
+            btn_Donate.Content = "Donate";
+            btn_UpdateLog.Content = "Update Log";
+            tbl_MainState.Text = "Englinsh Version In Testing";
+            tbl_Introdution.Text = "Provissy Tools \n A Tool For KanColleViewer";
+            lb_StatisticsIntrodution.Content = "The tool will record your build,develop,materials and drops automatically.";
+            lb_UpdateInformation.Content = "Fixed UI. Click here to visit provissy.com";
+            btn_OpenFunc.Content = "↓Functions↓";
+            funcbtn_2014AkiEvent.Content = "2014 Fall Event";
+            funcbtn_Cal.Content = "Exp Calculator";
+            funcbtn_Donate.Content = "Donate";
+            funcbtn_Settings.Content = "Settings";
+            btn_AutoCheckUpdate.Content = "Check update automatically";
+            btn_CloseKCV.Content = "Close KCV";
+            btn_ReInitialize.Content = "Connect to server";
+            btn_BBS_SetColorToRed.Content = "Red";
+            rtb_BBS_CommentToSend.AppendText("Type your comment");
+            btn_BBS_GetComments.Content = "Refresh";
+            btn_BBS_SendComment.Content = "Send";
+            btn_BBS_ZoomIn.Content = "Zoom in";
+            BBS_AutoRefreshComments.Content = "Auto refresh (30s)";
+            btn_AkiEvent_MapViewer.Content = "Check HP Of Event Map";
+            tbl_Backup_Username.Text = "Username";
+            tbl_Backup_Password.Text = "Password";
+            btn_Backup_CreateAccount.Content = "Sign Up";
+            lb_Backup_Introdution.Content = "KCV will get 'No Response' when syncing";
+            btn_Backup_CloudToLocal.Content = "Cloud->Local";
+            btn_Backup_LocalToCloud.Content = "Local->Cloud";
+            lb_Backup_Username.Content = "Username:";
+            pcb_ShipGirlList.Prompt = "Select Ship Girl";
+            tbl_Remaining.Text = "Remaining";
+            tbl_Result.Text = "result";
+            tbl_TargetLevel.Text = "Target Lv";
+            tbl_Exp.Text = "EXP";
+            tbl_CurrentLevel.Text = "Current Lv";
+            btn_ClickToClose.Content = "↑Close↑";
+            lb_BBSTestIntrodution.Content = "BBS Test β3.0";
+
+        }
+
+        private void funcbtn_Counter_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            Counter.Visibility = Visibility.Visible;
+
         }
     }
 }
