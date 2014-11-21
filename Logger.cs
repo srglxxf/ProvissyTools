@@ -41,6 +41,7 @@ namespace ProvissyTools
             proxy.api_req_kousyou_createship.TryParse<kcsapi_createship>().Subscribe(x => this.CreateShip(x.Request));
             proxy.api_get_member_kdock.TryParse<kcsapi_kdock[]>().Subscribe(x => this.KDock(x.Data));
             proxy.api_req_sortie_battleresult.TryParse<kcsapi_battleresult>().Subscribe(x => this.BattleResult(x.Data));
+            proxy.api_req_combined_battle_battleresult.TryParse<kcsapi_combined_battle_battleresult>().Subscribe(x => this.CombinedBattleResult(x.Data));
             //proxy.api_req_sortie_battleresult.TryParse<kcsapi_map_start>().Subscribe(x => this.MapStart(x.Data));
             proxy.api_get_member_material.TryParse<kcsapi_material[]>().Subscribe(x => this.MaterialsHistory(x.Data));
             proxy.api_req_hokyu_charge.TryParse<kcsapi_charge>().Subscribe(x => this.MaterialsHistory(x.Data.api_material));
@@ -80,6 +81,18 @@ namespace ProvissyTools
                 this.Log(LogType.BuildShip, "{0},{1},{2},{3},{4},{5},{6}", DateTime.Now.ToString(this.LogTimestampFormat), KanColleClient.Current.Master.Ships[dock.api_created_ship_id].Name, this.shipmats[0], this.shipmats[1], this.shipmats[2], this.shipmats[3], this.shipmats[4]);
                 this.waitingForShip = false;
             }
+        }
+
+        private void CombinedBattleResult(kcsapi_combined_battle_battleresult br)
+        {
+            if (br.api_get_ship == null)
+                return;
+
+            Log(LogType.ShipDrop, "{0},{1},{2},{3},{4}", DateTime.Now.ToString(this.LogTimestampFormat),
+                br.api_get_ship.api_ship_name,
+                br.api_quest_name,
+                br.api_enemy_info.api_deck_name,
+                br.api_win_rank);
         }
 
         private void BattleResult(kcsapi_battleresult br)

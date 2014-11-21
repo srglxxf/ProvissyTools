@@ -25,6 +25,10 @@ using System.Diagnostics;
 using System.Data;
 using System.Data.Odbc;
 using Grabacr07.KanColleWrapper.Models.Raw;
+using Grabacr07.KanColleViewer.Composition;
+using System.ComponentModel.Composition;
+using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
 
 namespace ProvissyTools
 {
@@ -33,6 +37,7 @@ namespace ProvissyTools
     /// </summary>
     public partial class MainView : UserControl
     {
+
         // 10s time-out.
         private System.Timers.Timer timer = new System.Timers.Timer(30000);
 
@@ -45,14 +50,13 @@ namespace ProvissyTools
             Panel.SetZIndex(FunctionGrid, 1);
             WelcomePage.Visibility = Visibility.Visible;
             timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-            //FTP_GoToBBSCenter();
-            //timer.Start();
         }
 
         private void FTP_GoToBBSCenter()
         {
             try
             {
+                //Proxy.GetProxy
                 FTP_FOR_BBS.GotoDirectory("BBS_Test_Center");
                 uploadConfig();
                 btn_ReInitialize.Visibility = Visibility.Hidden;
@@ -110,147 +114,108 @@ namespace ProvissyTools
                 {
                     timer.Stop();
                     lb_BBS_ShowState.Content = "自动刷新中";
-                    Thread t = new Thread(forGetComments_Click);
-                    t.Start();
+                    //Thread t = new Thread(forGetComments_Click);
+                    //t.Start();
                     timer.Start();
                 }
-            );
+            );  
         }
 
         bool newUpdateAvailable = false;
+        
+        private string keyWord = "#14112101#";
 
-        private string keyWord = "#14111202#";
+        #region Check update.
+        WebClient wClient = new WebClient();
         /// <summary>
         /// Check update by downloading a page.
         /// </summary>
-        #region Update Checker
-        private void CallMethodButton_Click_1(object sender, RoutedEventArgs e)
+        private async void CallMethodButton_Click_1(object sender, RoutedEventArgs e)
         {
             if (!newUpdateAvailable)
             {
-                try
-                {
-                    string str;
-                    string allFile;
-                    string fileContent;
-                    bool flag = false;
-                    long SPosition = 0;
-                    FileStream FStream;
-                    if (File.Exists(UniversalConstants.CurrentDirectory + "check"))
-                    {
-                        try { this.deletefile(); }
-                        catch (Exception ex) { ErrorHandler(ex.ToString()); }
-                        FStream = new FileStream(UniversalConstants.CurrentDirectory + "check", FileMode.Create);
-                        SPosition = 0;
-                    }
-                    else
-                    {
-                        FStream = new FileStream(UniversalConstants.CurrentDirectory + "check", FileMode.Create);
-                        SPosition = 0;
-                    }
-                    try
-                    {
-                        HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create("http://www.cnblogs.com/provissy/p/4056570.html");
-                        if (SPosition > 0)
-                            myRequest.AddRange((int)SPosition);
-                        Stream myStream = myRequest.GetResponse().GetResponseStream();
-                        byte[] btContent = new byte[512];
-                        int intSize = 0;
-                        intSize = myStream.Read(btContent, 0, 512);
-                        while (intSize > 0)
-                        {
-                            FStream.Write(btContent, 0, intSize);
-                            intSize = myStream.Read(btContent, 0, 512);
-                        }
-                        FStream.Close();
-                        myStream.Close();
-                        flag = true;        //返回true下载成功
-                    }
-                    catch (Exception)
-                    {
-                        FStream.Close();
-                        flag = false;       //返回false下载失败
-                    }
-                    if (flag)
-                    {
-                        str = "check";
-                        System.IO.FileStream myStreama = new FileStream(UniversalConstants.CurrentDirectory + str, FileMode.Open);       //Read File.
-                        System.IO.StreamReader myStreamReader = new StreamReader(myStreama);
-                        fileContent = myStreamReader.ReadToEnd();
-                        myStreamReader.Close();
-                        allFile = fileContent;
-                        Regex reg = new Regex(keyWord);     //keyword.
-                        Match mat = reg.Match(allFile);
-                        if (mat.Success)
-                        {
-                            MessageBox.Show("Current version is up-to-date！");
-                        }
-                        else
-                        {
-                            MessageBox.Show("New version available！");      //Success.
-                            chkUpdateButton.Content = "Install";
-                            newUpdateAvailable = true;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ErrorHandler("Failed, try again？Error Message：" + ex);
-                }
+                chkUpdateButton.Content = "检查中";
+                chkUpdateButton.Content = await updateChecker();
             }
             else
             {
-                Thread t = new Thread(fileDownloader);
-                t.Start();
-                chkUpdateButton.Content = "Updating...";
+                chkUpdateButton.Content = "更新中";
+                await updaterDownloader();
             }
         }
 
-        private void deletefile()
+        private async Task<string> updateChecker()
         {
-            try
+            return await Task.Run(() =>
             {
-                File.Delete("check");
-            }
-            catch
-            {
-                ErrorHandler("ERROR WHEN CHECKING UPDATE");
-            }
-        }
-        #endregion
-
-        private void fileDownloader()
-        {
-            try
-            {
-                if (File.Exists(UniversalConstants.CurrentDirectory + @"\UpdaterForPrvTools.exe"))
+                try
                 {
-                    File.Delete(UniversalConstants.CurrentDirectory + @"\UpdaterForPrvTools.exe");
+                    if (File.Exists(UniversalConstants.CurrentDirectory + "check"))
+                    {
+                        File.Delete(UniversalConstants.CurrentDirectory + "check");
+                    }
+                    string pathURL = "http://www.cnblogs.com/provissy/p/4056570.html";
+                    string pathLocal = UniversalConstants.CurrentDirectory + "check";
+                    string fileContent;
+                    wClient.DownloadFile(pathURL, pathLocal);
+                    System.IO.FileStream myStreama = new FileStream(UniversalConstants.CurrentDirectory + "check", FileMode.Open);       //Read File.
+                    System.IO.StreamReader myStreamReader = new StreamReader(myStreama);
+                    fileContent = myStreamReader.ReadToEnd();
+                    myStreamReader.Close();
+                    Regex reg = new Regex(keyWord);     //keyword.
+                    Match mat = reg.Match(fileContent);
+                    if (mat.Success)
+                    {
+                        return "无更新";
+                    }
+                    else
+                    {
+                        newUpdateAvailable = true;
+                        return "更新可用";
+                    }
+
                 }
-                Uri u = new Uri("ftp://m50.coreserver.jp/");
-                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
-                fc.GotoDirectory("UpdaterForPrvTools_Download");
-                fc.DownloadFile("UpdaterForPrvTools.exe", UniversalConstants.CurrentDirectory);
-                Process.Start("UpdaterForPrvTools.exe");
-                //Application.Current.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler("更新时出错！ " + ex.ToString());
-            }
+                catch
+                {
+                    return "错误";
+                }
+
+                });
 
         }
+
+        private async Task updaterDownloader()
+        {
+            await Task.Run(() =>
+            {
+                if(File.Exists(UniversalConstants.CurrentDirectory + "UpdaterForPrvTools.exe"))
+                {
+                    File.Delete(UniversalConstants.CurrentDirectory + "UpdaterForPrvTools.exe");
+                }
+                WebClient wClient = new WebClient();
+                string pathURL = "http://provissy.com/UpdaterForPrvTools.exe";
+                string pathLocal = UniversalConstants.CurrentDirectory + "UpdaterForPrvTools.exe";
+                try
+                {
+                    WebRequest myre = WebRequest.Create(pathURL);
+                    wClient.DownloadFile(pathURL, pathLocal);
+                    Process.Start(UniversalConstants.CurrentDirectory + "UpdaterForPrvTools.exe");
+                }
+                catch (WebException exp)
+                {
+                    MessageBox.Show(exp.Message, "Error");
+                }
+            });
+        }
+
+        #endregion 
+
 
         private void CallMethodButton_Click_2(object sender, RoutedEventArgs e)
         {
             funcbtn_Donate_Click(null, null);
+            
         }
-
-
-        /// <summary>
-        /// Update Userlog .
-        /// No privacy data uploaded .
-        /// </summary>
 
         private void CallMethodButton_Click_3(object sender, RoutedEventArgs e)
         {
@@ -270,6 +235,8 @@ namespace ProvissyTools
             }
             catch { }
         }
+
+        #region Control fucntion tabs.
 
         //Open menu.
         private void CallMethodButton_Click(object sender, RoutedEventArgs e)
@@ -307,7 +274,7 @@ namespace ProvissyTools
             funcbtn_OpenTwitter.Visibility = Visibility.Hidden;
             funcbtn_OpenWiki.Visibility = Visibility.Hidden;
             funcbtn_Counter.Visibility = Visibility.Hidden;
-
+            
             // End.
             btn_ClickToClose.Visibility = Visibility.Hidden;
             btn_BackToHomePage.Visibility = Visibility.Visible;
@@ -325,7 +292,23 @@ namespace ProvissyTools
             ErrorHandle.Visibility = Visibility.Hidden;
             StatisticsBackup.Visibility = Visibility.Hidden;
             EventMapViewer.Visibility = Visibility.Hidden;
+            Counter.Visibility = Visibility.Hidden;
             BrowserPage.Visibility = Visibility.Hidden;
+        }
+
+        private void btn_AkiEvent_MapViewer_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            EventMapViewer.Visibility = Visibility.Visible;
+        }
+
+        private void funcbtn_Counter_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            Counter.Visibility = Visibility.Visible;
+
         }
 
         private void funcbtn_Cal_Click(object sender, RoutedEventArgs e)
@@ -335,11 +318,25 @@ namespace ProvissyTools
             ExpCal.Visibility = Visibility.Visible;
         }
 
+        private void btn_BackToHomePage_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            btn_BackToHomePage.Visibility = Visibility.Hidden;
+            WelcomePage.Visibility = Visibility.Visible;
+        }
+
+        private void funcbtn_Settings_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            PrvToolsSettings.Visibility = Visibility.Visible;
+        }
+
         private void funcbtn_OpenTwitter_Click(object sender, RoutedEventArgs e)
         {
             closeAllTabs();
             closeFuncTab();
-            wb_WebBrowser.Source = (new Uri("https://twitter.com/KanColle_STAFF"));
+            wb_WebBrowser.Navigate("https://m.twitter.com/KanColle_STAFF");
             BrowserPage.Visibility = Visibility.Visible;
         }
 
@@ -348,7 +345,7 @@ namespace ProvissyTools
             closeAllTabs();
             closeFuncTab(); 
             //WebProxy wp = new WebProxy("localhost", 8888);
-            wb_WebBrowser.Source = (new Uri("http://wikiwiki.jp/kancolle/"));
+            wb_WebBrowser.Navigate("http://wikiwiki.jp/kancolle/");
             BrowserPage.Visibility = Visibility.Visible;
         }
 
@@ -358,6 +355,8 @@ namespace ProvissyTools
             closeFuncTab();
             StatisticsData.Visibility = Visibility.Visible;
         }
+
+        #endregion 
 
         /// <summary>
         /// Read CSV File to DataGrid
@@ -462,19 +461,7 @@ namespace ProvissyTools
 
 
 
-        private void btn_BackToHomePage_Click(object sender, RoutedEventArgs e)
-        {
-            closeAllTabs();
-            btn_BackToHomePage.Visibility = Visibility.Hidden;
-            WelcomePage.Visibility = Visibility.Visible;
-        }
 
-        private void funcbtn_Settings_Click(object sender, RoutedEventArgs e)
-        {
-            closeAllTabs();
-            closeFuncTab();
-            PrvToolsSettings.Visibility = Visibility.Visible;
-        }
         private void CallMethodButton_Click_8(object sender, RoutedEventArgs e)
         {
             Process.Start("http://provissy.com");
@@ -522,108 +509,25 @@ namespace ProvissyTools
             Process.Start("http://provissy.com");
         }
 
-        private void intListItemClicked(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                string controlName = ((Label)sender).Content.ToString();   //获取引发该方法的控件的名称。
-                Uri u = new Uri("ftp://m50.coreserver.jp/");
-                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
-                fc.GotoDirectory("PrvToolsCommCenter");
-                byte[] bt = fc.DownloadFile(controlName);
-                System.IO.Stream ss = new System.IO.MemoryStream(bt);
-                FlowDocument doc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
-                ss.Close();
-                rtb_LoadedContent.Document = doc;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-        }
-
-        //private void listItemMouseOver(object sender , MouseEventArgs e)
-        //{
-
-        //}
-
-        private void btn_RefreshMessageList_Click(object sender, RoutedEventArgs e)
-        {
-            //userMessageScrollViewer.Content = userMessageStackPanel;
-            Uri u = new Uri("ftp://m50.coreserver.jp/");
-            FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
-            fc.GotoDirectory("PrvToolsCommCenter");
-            foreach (FileStruct fileData in fc.ListFiles())
-            {
-                Label messages = new Label();
-                SolidColorBrush scb = new SolidColorBrush(Colors.White);
-                messages.Foreground = scb;
-                messages.FontSize = 20;
-                messages.Cursor = Cursors.Hand;
-                messages.Content = fileData.Name;
-                messages.MouseLeftButtonDown += new System.Windows.Input.MouseButtonEventHandler(this.intListItemClicked);
-                //messages.MouseMove += new MouseEventHandler(this.listItemMouseOver);
-                sp_MessageList.Children.Add(messages);
-                //userMessageScrollViewer.
-            }
-        }
-
-        private void btn_SendMessage_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Uri u = new Uri("ftp://m50.coreserver.jp/");
-                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
-                if (!fc.FileExist(tb_TitleOfContent.Text))
-                {
-                    fc.GotoDirectory("PrvToolsCommCenter");
-                    FlowDocument document = rtb_ContentToSend.Document;
-                    System.IO.Stream s = new System.IO.MemoryStream();
-                    System.Windows.Markup.XamlWriter.Save(document, s);
-                    byte[] data = new byte[s.Length];
-                    s.Position = 0;
-                    s.Read(data, 0, data.Length);
-                    s.Close();
-                    fc.UploadFile(data, tb_TitleOfContent.Text);
-                }
-                else
-                {
-                    MessageBox.Show("已有同名文件了哦！");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void CallMethodButton_Click_10(object sender, RoutedEventArgs e)
         {
             Process.Start("http://tieba.baidu.com/p/3381387613");
         }
 
+        #region BBS center.
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
+        FTPControl FTP_FOR_BBS = new FTPControl(new Uri("ftp://m50.coreserver.jp/"), "provissy", "qkMWpEJkvW5d");
 
         private void btn_BBS_SendComment_Click(object sender, RoutedEventArgs e)
         {
-            lb_BBS_ShowState.Content = "发送中";
-            Thread t = new Thread(ForSendComment_Click);
-            t.Start();
-
+            //lb_BBS_ShowState.Content = "发送中";
+            sendCommentAsync();
         }
 
-        private void ForSendComment_Click()
+        private void sendCommentAsync()
         {
             try
             {
-
-                Action a = new Action(() =>
-                {
                     byte[] downloadedComments = FTP_FOR_BBS.DownloadFile("BBS_Test_2");
                     System.IO.Stream ss = new System.IO.MemoryStream(downloadedComments);
                     FlowDocument downloadedDoc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
@@ -639,27 +543,15 @@ namespace ProvissyTools
                     s.Read(data, 0, data.Length);
                     s.Close();
                     FTP_FOR_BBS.UploadFile(data, "BBS_Test_2", true);
-                    lb_BBS_ShowState.Content = "发送完毕";
-                });
-                this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
-
-                //string tempText = System.Text.Encoding.UTF8.GetString(downloadedText);
-                //string tempText2 = tempText += "\n" + DateTime.Now.ToString() + "---" + tb_BBS_Username.Text + "\n" + tb_CommentToSend.Text;
-                //byte[] bytes = Encoding.UTF8.GetBytes(tempText2);
-                //fc.UploadFile(bytes, "BBS_Test_1", true);
+                    //return "发送完毕";
             }
             catch (Exception ex)
             {
-                Action a = new Action(() =>
-                {
-                    lb_BBS_ShowState.Content = "发送失败";
+                    
                     ErrorHandler(ex.ToString());
-                });
-                this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
+                    //return "发送失败";
             }
         }
-
-
 
         private FlowDocument FlowDocumentJoint(FlowDocument doc1, FlowDocument doc2)
         {
@@ -679,39 +571,29 @@ namespace ProvissyTools
 
         private void btn_BBS_GetComments_Click(object sender, RoutedEventArgs e)
         {
-            lb_BBS_ShowState.Content = "刷新中";
-            Thread t = new Thread(forGetComments_Click);
-            t.Start();
+            //lb_BBS_ShowState.Content = "刷新中";
+            //rtb_BBS_Comment.Document = getCommentsAsync();
+            getCommentsAsync();
         }
 
-        private void forGetComments_Click()
+        private void getCommentsAsync()
         {
+            //return await Task.Run(() =>{
             try
             {
-                //byte[] downloadedText = fc.DownloadFile("BBS_Test_1");
-                //tb_BBS_Comments.Text = System.Text.Encoding.UTF8.GetString(downloadedText);
-
-                Action a = new Action(() =>
-                {
-                    byte[] downloadedComments = FTP_FOR_BBS.DownloadFile("BBS_Test_2");
-                    System.IO.Stream ss = new System.IO.MemoryStream(downloadedComments);
-                    FlowDocument doc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
+                System.IO.Stream ss =  new System.IO.MemoryStream(FTP_FOR_BBS.DownloadFile("BBS_Test_2"));
+                FlowDocument doc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
                     ss.Close();
                     rtb_BBS_Comment.Document = doc;
-                    lb_BBS_ShowState.Content = "刷新完毕";
-                });
-                this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
+                    //return doc;
             }
             catch (Exception ex)
             {
-                Action a = new Action(() =>
-                {
-                    lb_BBS_ShowState.Content = "刷新失败";
                     ErrorHandler(ex.ToString());
-                });
-                this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
-
+                    //return;
+                    //return "刷新失败";
             }
+                //});
         }
 
 
@@ -719,8 +601,6 @@ namespace ProvissyTools
         {
             try
             {
-                //byte[] downloadedText = fc.DownloadFile("BBS_Test_1");
-                //tb_BBS_Comments.Text = System.Text.Encoding.UTF8.GetString(downloadedText);
                 byte[] downloadedComments = FTP_FOR_BBS.DownloadFile("BBS_Test_2");
                 System.IO.Stream ss = new System.IO.MemoryStream(downloadedComments);
                 FlowDocument doc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
@@ -746,22 +626,6 @@ namespace ProvissyTools
             }
         }
 
-
-
-        FTPControl FTP_FOR_BBS = new FTPControl(new Uri("ftp://m50.coreserver.jp/"), "provissy", "qkMWpEJkvW5d");
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    FlowDocument document = rtb_BBS_CommentToSend.Document;
-        //    System.IO.Stream s = new System.IO.MemoryStream();
-        //    System.Windows.Markup.XamlWriter.Save(document, s);
-        //    byte[] data = new byte[s.Length];
-        //    s.Position = 0;
-        //    s.Read(data, 0, data.Length);
-        //    s.Close();
-        //    FTP_FOR_BBS.UploadFile(data, "BBS_Test_2", true);
-        //}
-
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             int fontSize = Convert.ToInt32(rtb_BBS_CommentToSend.Selection.GetPropertyValue(TextElement.FontSizeProperty));
@@ -769,21 +633,16 @@ namespace ProvissyTools
             rtb_BBS_CommentToSend.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, fontSize.ToString());
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
         private void btn_BBS_SetColorToRed_Click(object sender, RoutedEventArgs e)
         {
             rtb_BBS_CommentToSend.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
         }
 
+        #endregion
 
-
-        private void btn_BBS_AutoRefreshComments_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-
+            Application.Current.Shutdown();
         }
 
         private void BBS_AutoRefreshComments_Checked(object sender, RoutedEventArgs e)
@@ -796,8 +655,6 @@ namespace ProvissyTools
             {
                 timer.Stop();
             }
-
-            //FTP_FOR_BBS.DownloadDataCompleted += new FTPControl.De_DownloadDataCompleted(refreshData);
         }
 
         private void btn_ReInitialize_Click(object sender, RoutedEventArgs e)
@@ -826,6 +683,8 @@ namespace ProvissyTools
             s.Close();
             FTP_FOR_BBS.UploadFile(data, "BBS_Test_2", true);
         }
+
+        #region Could backup.
 
         private void btn_CloudBackup_Click(object sender, RoutedEventArgs e)
         {
@@ -985,11 +844,6 @@ namespace ProvissyTools
             }
         }
 
-        private void CallMethodButton_Click_11(object sender, RoutedEventArgs e)
-        {
-            StatisticsBackup.Visibility = Visibility.Hidden;
-        }
-
         private void CallMethodButton_Click_12(object sender, RoutedEventArgs e)
         {
             try
@@ -1036,12 +890,9 @@ namespace ProvissyTools
             catch { }
         }
 
-        private void btn_AkiEvent_MapViewer_Click(object sender, RoutedEventArgs e)
-        {
-            closeAllTabs();
-            closeFuncTab();
-            EventMapViewer.Visibility = Visibility.Visible;
-        }
+        #endregion
+
+        #region Translation
 
         private void funcbtn_SwitchToEnglish_Click(object sender, RoutedEventArgs e)
         {
@@ -1085,12 +936,137 @@ namespace ProvissyTools
 
         }
 
-        private void funcbtn_Counter_Click(object sender, RoutedEventArgs e)
-        {
-            closeAllTabs();
-            closeFuncTab();
-            Counter.Visibility = Visibility.Visible;
+        #endregion
 
+
+
+        private void btn_DownloadProvissyLS_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if(File.Exists(UniversalConstants.CurrentDirectory + @"\Plugins\ProvissyLandscape.dll"))
+                {
+                    File.Delete(UniversalConstants.CurrentDirectory + @"\Plugins\ProvissyLandscape.dll");
+                }
+                Uri ur = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(ur, "provissy", "qkMWpEJkvW5d");
+                fc.GotoDirectory("./public_html/provissy.com");
+                fc.DownloadFile("ProvissyLandscape.dll", UniversalConstants.CurrentDirectory + @"\Plugins");
+                MessageBox.Show("下载扩展成功！请重启KanColleViewer！");
+            }
+            catch(Exception ex)
+            {
+                ErrorHandler(ex.ToString());
+            }
+        }
+
+        private void btn_FixChart_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
+                fc.GotoDirectory("ChartRequiredDLL");
+                if (File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
+                {
+                    File.Delete(UniversalConstants.CurrentDirectory + "WPFToolkit.dll");
+                    fc.DownloadFile("WPFToolkit.dll", UniversalConstants.CurrentDirectory);
+                }
+
+                else
+                {
+                    fc.DownloadFile("WPFToolkit.dll", UniversalConstants.CurrentDirectory);
+                }
+
+                if (File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll"))
+                {
+                    File.Delete(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll");
+                    fc.DownloadFile("System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory);
+                }
+
+                else
+                {
+                    fc.DownloadFile("System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory);
+                }
+                MessageBox.Show("修复完毕！");
+            }
+            catch(Exception ex)
+            {
+                ErrorHandler("修复失败！重开KCV后尝试？ " + ex.ToString());
+            }
+        }
+
+        private void btn_GC_Click(object sender, RoutedEventArgs e)
+        {
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+        }
+
+        private void btn_ActivateSoundNotify_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(downloadSoundDLL);
+            t.Start();
+        }
+
+        private void downloadSoundDLL()
+        {
+            try
+            {
+                Uri u = new Uri("ftp://m50.coreserver.jp/");
+                FTPControl fc = new FTPControl(u, "provissy", "qkMWpEJkvW5d");
+                fc.GotoDirectory("DLLs");
+                fc.DownloadFile("NAudio.dll", UniversalConstants.CurrentDirectory);
+                MessageBox.Show("激活成功，请重启KCV！");
+                string c = UniversalConstants.CurrentDirectory;
+                if (Directory.Exists(c + @"\Sounds"))
+                {
+                    Directory.Delete(c + @"\Sounds");
+                }
+                if (!Directory.Exists(c + @"\Sounds"))
+                {
+                    Directory.CreateDirectory(c + @"\Sounds");
+                    DirectoryInfo dir = new DirectoryInfo(c + @"\Sounds");
+                    dir.CreateSubdirectory(Grabacr07.KanColleViewer.Properties.Resources.Repairyard_NotificationMessage_Title);
+                    dir.CreateSubdirectory(Grabacr07.KanColleViewer.Properties.Resources.Expedition_NotificationMessage_Title);
+                    dir.CreateSubdirectory(Grabacr07.KanColleViewer.Properties.Resources.Dockyard_NotificationMessage_Title);
+                }
+                Process.Start(c + @"\Sounds");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error " + ex.ToString());
+            }
+        }
+
+        
+        
+
+        private void autoRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int a = Convert.ToInt32(tb_hWnd.Text);
+                GameWatcher gw = new GameWatcher((IntPtr)a);
+                if (autoRefresh.IsChecked == true)
+                {
+                    gw.isEnabled = true;
+                }
+                else
+                {
+                    gw.isEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR" + ex.ToString());
+            }
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            string pathURL = "http://provissy.com/nekoError.png";
+            string pathLocal = UniversalConstants.CurrentDirectory + "nekoError.png";
+            wClient.DownloadFile(pathURL, pathLocal);
+            autoRefresh.IsEnabled = true;
         }
     }
 }

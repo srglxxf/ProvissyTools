@@ -16,9 +16,17 @@ namespace ProvissyTools
 	[ExportMetadata("Author", "@Provissy")]
 	public class ProvissyTools : IToolPlugin
 	{
+        public ProvissyTools()
+        {
+            
+        }
+
 		private readonly MainViewViewModel viewmodel = new MainViewViewModel
 		{
-		};
+            
+            MapInfoProxy = new MapInfoProxy()
+
+        };
 
 		public string ToolName
 		{
@@ -35,4 +43,53 @@ namespace ProvissyTools
 			return new MainView { DataContext = this.viewmodel, };
 		}
 	}
+
+
+
+    [Export(typeof(INotifier))]
+    [ExportMetadata("Title", "ProvissyNotifyer")]
+    [ExportMetadata("Description", "Provissy Notifyer")]
+    [ExportMetadata("Version", "1.0")]
+    [ExportMetadata("Author", "@Provissy")]
+    public class WindowsNotifier : INotifier
+    {
+        private readonly INotifier notifier;
+        private bool checker;
+        
+        public WindowsNotifier()
+        {
+            ProvissyToolsSettings.Load();
+            checker = ProvissyToolsSettings.Current.EnableSoundNotify;
+            if (!checker)
+                return;
+            this.notifier =  new Windows7Notifier();
+        }
+
+        public void Dispose()
+        {
+            if (!checker)
+                return;
+            this.notifier.Dispose();
+        }
+
+        public void Initialize()
+        {
+            if (!checker)
+                return;
+            this.notifier.Initialize();
+        }
+
+        public void Show(NotifyType type, string header, string body, Action activated, Action<Exception> failed = null)
+        {
+            if (!checker)
+                return;
+            this.notifier.Show(type, header, body, activated, failed);
+        }
+
+        public object GetSettingsView()
+        {
+            return this.notifier.GetSettingsView();
+        }
+
+    }
 }

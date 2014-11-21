@@ -19,10 +19,10 @@ namespace ProvissyTools
     public class Counter : NotificationObject
     {
         public bool EnableLogging = true;
-        private bool waitingForShip;
-        private int dockid;
-        private readonly int[] shipmats;
-        private readonly string LogTimestampFormat = "yyyy-MM-dd HH:mm:ss";
+        //private bool waitingForShip;
+        //private int dockid;
+        //private readonly int[] shipmats;
+        //private readonly string LogTimestampFormat = "yyyy-MM-dd HH:mm:ss";
 
         private enum LogType
         {
@@ -42,8 +42,12 @@ namespace ProvissyTools
 
         private void BattleResult(kcsapi_battleresult br)
         {
-            MessageBox.Show("api_enemy_info.api_level " + br.api_enemy_info.api_level);
-            MessageBox.Show("api_quest_level " + br.api_quest_level.ToString());
+            if(br.api_quest_level != null)
+            {
+                StorieResult++;
+            }
+            //MessageBox.Show("api_enemy_info.api_level " + br.api_enemy_info.api_level);
+            //MessageBox.Show("api_quest_level " + br.api_quest_level.ToString());
             //if (br.api_get_ship == null)
             //    return;
 

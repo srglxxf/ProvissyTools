@@ -16,7 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Shapes;    
 using System.Windows.Threading;
 
 
@@ -27,7 +27,7 @@ namespace ProvissyTools
     /// </summary>
     public partial class UpdateNotifyer : Window
     {
-        private string keyWord = "#14111202#";
+        private string keyWord = "#14112101#";
         private System.Timers.Timer timer = new System.Timers.Timer(500000);
         private short chk;
         //public UpdateNotifyer()

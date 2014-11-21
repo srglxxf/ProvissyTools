@@ -31,7 +31,19 @@ namespace ProvissyTools
             t.Start();
         }
 
-
+        private void initializeChart()
+        {
+            try
+            {
+                loadMatChart();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载统计图错误！ " + ex.ToString());
+                //MainView m = new MainView();
+                //m.ErrorHandler("加载统计图错误！ " + ex.ToString());
+            }
+        }
 
         //private static Style GetNewDataPointStyle(int R,int G,int B)
         //{
@@ -62,14 +74,14 @@ namespace ProvissyTools
         {
             Action a = new Action(() => {
                 List<string[]> loadedList = ReadCSV(UniversalConstants.CurrentDirectory + "MaterialsLog.csv");
-            LineSeries fuelLine = LineChart1.Series[0] as LineSeries;
-            fuelLine.ItemsSource = loadFuel(loadedList);
-            LineSeries ammoLine = LineChart1.Series[1] as LineSeries;
-            ammoLine.ItemsSource = loadAmmo(loadedList);
-            LineSeries steelLine = LineChart1.Series[2] as LineSeries;
-            steelLine.ItemsSource = loadSteel(loadedList);
-            LineSeries bauxiteLine = LineChart1.Series[3] as LineSeries;
-            bauxiteLine.ItemsSource = loadBauxite(loadedList);
+                LineSeries fuelLine = LineChart1.Series[0] as LineSeries;
+                fuelLine.ItemsSource = loadFuel(loadedList);
+                LineSeries ammoLine = LineChart1.Series[1] as LineSeries;
+                ammoLine.ItemsSource = loadAmmo(loadedList);
+                LineSeries steelLine = LineChart1.Series[2] as LineSeries;
+                steelLine.ItemsSource = loadSteel(loadedList);
+                LineSeries bauxiteLine = LineChart1.Series[3] as LineSeries;
+                bauxiteLine.ItemsSource = loadBauxite(loadedList);
             //Style dataPointStyle1 = GetNewDataPointStyle(34,139,34);
             //Style dataPointStyle2 = GetNewDataPointStyle(138,54,15);
             //Style dataPointStyle3 = GetNewDataPointStyle(128,138,135);
@@ -86,9 +98,34 @@ namespace ProvissyTools
         private List<MatData> loadBauxite(List<string[]> loadMat)
         {
             List<MatData> matdata = new List<MatData>();
-            foreach (string[] ss in loadMat)
+            int lenth = loadMat.Count;
+            int quarter = lenth / 4;
+            //foreach (string[] ss in loadMat)
+            for (int i = 0; i < loadMat.Count; i++)
             {
-                matdata.Add(new MatData(ss[0], Int32.Parse(ss[4])));
+                if (i == 0)
+                {
+                    matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][4])));
+                }
+                else
+                {
+                    if (quarter == i || quarter * 2 == i || quarter * 3 == i || quarter * 4 == i)
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][4])));
+                    }
+                    else
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][4])));
+                        //if(ssCount%2 == 0)
+                        //{
+                        //    matdata.Add(new MatData(" ", Int32.Parse(ss[3])));
+                        //}
+                        //else
+                        //{
+                        //    matdata.Add(new MatData("　", Int32.Parse(ss[3])));
+                        //}  
+                    }
+                }
             }
             return matdata;
         }
@@ -96,9 +133,34 @@ namespace ProvissyTools
         private List<MatData> loadSteel(List<string[]> loadMat)
         {
             List<MatData> matdata = new List<MatData>();
-            foreach (string[] ss in loadMat)
+            int lenth = loadMat.Count;
+            int quarter = lenth / 4;
+            //foreach (string[] ss in loadMat)
+            for (int i = 0; i < loadMat.Count; i++ )
             {
-                matdata.Add(new MatData(ss[0], Int32.Parse(ss[3])));
+                if (i == 0)
+                {
+                    matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][3])));
+                }
+                else
+                {
+                    if (quarter == i || quarter * 2 == i || quarter * 3 == i || quarter * 4 == i)
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][3])));
+                    }
+                    else
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][3])));
+                        //if(ssCount%2 == 0)
+                        //{
+                        //    matdata.Add(new MatData(" ", Int32.Parse(ss[3])));
+                        //}
+                        //else
+                        //{
+                        //    matdata.Add(new MatData("　", Int32.Parse(ss[3])));
+                        //}  
+                    }
+                }
             }
             return matdata;
         }
@@ -106,9 +168,34 @@ namespace ProvissyTools
         private List<MatData> loadAmmo(List<string[]> loadMat)
         {
             List<MatData> matdata = new List<MatData>();
-            foreach (string[] ss in loadMat)
+            int lenth = loadMat.Count;
+            int quarter = lenth / 4;
+            //foreach (string[] ss in loadMat)
+            for (int i = 0; i < loadMat.Count; i++)
             {
-                matdata.Add(new MatData(ss[0], Int32.Parse(ss[2])));
+                if (i == 0)
+                {
+                    matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][2])));
+                }
+                else
+                {
+                    if (quarter == i || quarter * 2 == i || quarter * 3 == i || quarter * 4 == i)
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][2])));
+                    }
+                    else
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][2])));
+                        //if(ssCount%2 == 0)
+                        //{
+                        //    matdata.Add(new MatData(" ", Int32.Parse(ss[3])));
+                        //}
+                        //else
+                        //{
+                        //    matdata.Add(new MatData("　", Int32.Parse(ss[3])));
+                        //}  
+                    }
+                }
             }
             return matdata;
         }
@@ -116,9 +203,34 @@ namespace ProvissyTools
         private List<MatData> loadFuel(List<string[]> loadMat)
         {
             List<MatData> matdata = new List<MatData>();
-            foreach (string[] ss in loadMat)
+            int lenth = loadMat.Count;
+            int quarter = lenth / 4;
+            //foreach (string[] ss in loadMat)
+            for (int i = 0; i < loadMat.Count; i++)
             {
-                matdata.Add(new MatData(ss[0], Int32.Parse(ss[1])));
+                if (i == 0)
+                {
+                    matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][1])));
+                }
+                else
+                {
+                    if (quarter == i || quarter * 2 == i || quarter * 3 == i || quarter * 4 == i)
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][1])));
+                    }
+                    else
+                    {
+                        matdata.Add(new MatData(loadMat[i][0], Int32.Parse(loadMat[i][1])));
+                        //if(ssCount%2 == 0)
+                        //{
+                        //    matdata.Add(new MatData(" ", Int32.Parse(ss[3])));
+                        //}
+                        //else
+                        //{
+                        //    matdata.Add(new MatData("　", Int32.Parse(ss[3])));
+                        //}  
+                    }
+                }
             }
             return matdata;
         }
@@ -150,19 +262,7 @@ namespace ProvissyTools
             return ls;
         }
 
-        private void initializeChart()
-        {
-            try
-            {
-                loadMatChart();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("加载统计图错误！ " + ex.ToString());
-                //MainView m = new MainView();
-                //m.ErrorHandler("加载统计图错误！ " + ex.ToString());
-            }
-        }
+
     }
 
 
