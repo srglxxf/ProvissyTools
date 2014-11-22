@@ -62,6 +62,18 @@ namespace ProvissyTools
             webClientForUpload.Headers.Add("Content-Type", "binary/octet-stream");
             Thread t = new Thread(uploadConfig);
             t.Start();
+            //this.ContextMenuClosing += new ContextMenuEventHandler(cmc);
+            this.Unloaded += new RoutedEventHandler(cmc);
+            
+        }
+
+        private void cmc(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult message = MessageBox.Show("您想要关闭KCV么？", "Provissy Tools 提示", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (message == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown();
+            }
         }
 
         private void FTP_GoToBBSCenter()
@@ -227,7 +239,7 @@ namespace ProvissyTools
 
         private void CallMethodButton_Click_3(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://tieba.baidu.com/p/3398574166");
+            Process.Start("http://tieba.baidu.com/p/3425677275");
         }
 
         private void CallMethodButton_Click_4(object sender, RoutedEventArgs e)
@@ -1082,6 +1094,13 @@ namespace ProvissyTools
             }
             autoRefresh.IsEnabled = true;
         }
+
+        //private void usercontrolClosing(object sender, ContextMenuEventArgs e)
+        //{
+        //    MessageBox.Show("boom");
+        //    Application.Current.Shutdown();
+
+        //}
     }
 }
 

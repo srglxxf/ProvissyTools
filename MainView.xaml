@@ -19,7 +19,7 @@
 			 d:DesignWidth="580"
 			 d:DesignHeight="350"
 			 FontSize="12"
-			 d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}" FontFamily="Meiryo"  >
+			 d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}" FontFamily="Meiryo">
     <UserControl.Resources>
         <ResourceDictionary>
             <ObjectDataProvider x:Key="EnumerableRange"
@@ -104,7 +104,7 @@
 
         </Grid>
 
-        <Grid x:Name="PrvToolsSettings">
+        <Grid x:Name="PrvToolsSettings" Visibility="Hidden">
             <metro2:CallMethodButton x:Name="btn_DownloadProvissyLS" Content="KCV布局分离扩展下载" HorizontalAlignment="Left" Margin="344,40,0,0" VerticalAlignment="Top" Width="170" Click="btn_DownloadProvissyLS_Click" Height="41" FontSize="14"/>
             <CheckBox Content="打开声音提醒。" IsChecked="{Binding CurrentEnableSoundNotify}" HorizontalAlignment="Left" Margin="105,120,0,0" VerticalAlignment="Top"/>
             <CheckBox Content="无功能" HorizontalAlignment="Left" Margin="105,140,0,0" VerticalAlignment="Top" IsEnabled="False"/>
