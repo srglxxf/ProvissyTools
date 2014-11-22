@@ -42,6 +42,7 @@ namespace ProvissyTools
             return new ProvissyToolsSettings
             {
                 EnableSoundNotify = false,
+                //NekoDetector = false,
                 //Layout = KCVContentLayout.Portrait,
                 //WindowWidth = 800,
                 //WindowHeight = 400,
@@ -53,8 +54,10 @@ namespace ProvissyTools
 
         public bool EnableSoundNotify { get; set; }
 
+        //public bool NekoDetector { get; set; }
+
         //public double WindowHeight { get; set; }
 
-        public bool a { get; set; }
+        //public bool a { get; set; }
     }
 }

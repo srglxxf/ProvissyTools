@@ -20,13 +20,38 @@ using System.Text.RegularExpressions;
 using System.ComponentModel.Composition;
 using Grabacr07.KanColleViewer.Composition;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace ProvissyTools
 {
     public class MainViewViewModel : Grabacr07.KanColleViewer.ViewModels.TabItemViewModel
     {
 
+        [DllImport("user32.dll", EntryPoint = "WindowFromPoint")]
+        public static extern int WindowFromPoint(
+            int xPoint,
+            int yPoint
+        );
 
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left; //最左坐标
+            public int Top; //最上坐标
+            public int Right; //最右坐标
+            public int Bottom; //最下坐标
+        }
+
+
+        #region Storie data.
         /// <summary>
         /// 全舰娘等级，一行20个。
         /// </summary>
@@ -51,6 +76,8 @@ namespace ProvissyTools
 			{"4-1", 310}, {"4-2", 320}, {"4-3", 330}, {"4-4", 340},
 			{"5-1", 360}, {"5-2", 380}, {"5-3", 400}, {"5-4", 420}, {"5-5", 450}
 		};
+
+        #endregion
 
         public IEnumerable<string> ResultList { get; private set; }
         public string[] Results = { "S", "A", "B", "C", "D", "E" };
@@ -389,32 +416,49 @@ namespace ProvissyTools
             {
                 if (this._EnableAutoUpdateNotify != value)
                 {
+                    this.setAutoUpdateNotify(value);
                     this._EnableAutoUpdateNotify = value;
                     this.RaisePropertyChanged();
-                    this.setAutoUpdateNotify(value);
                 }
             }
         }
 
         #endregion
 
-        bool updateNotifyerAcivated = false;
+        #region NekoDetector 変更通知プロパティ
+
+        public bool _CurrentNekoDetector;
+
+        public bool CurrentNekoDetector
+        {
+            get { return _CurrentNekoDetector; }
+            set
+            {
+                if (_CurrentNekoDetector != value)
+                {
+                    nekoDetector(value);
+                    _CurrentNekoDetector = value;
+                    //ProvissyToolsSettings.Current.Save();
+                    this.RaisePropertyChanged();
+                }
+            }
+        }
+
+        #endregion
+
+        UpdateNotifyer u = new UpdateNotifyer();
 
         private void setAutoUpdateNotify(bool b)
         {
             if (b)
             {
-                UpdateNotifyer u = new UpdateNotifyer(true);
                 u.Show();
-                updateNotifyerAcivated = true;
-                MessageBox.Show("打开后要彻底关闭KCV请手动前往设置，然后点击'关闭KCV'(￣ε(#￣)☆╰╮(￣▽￣///)");
             }
             else
             {
-                MessageBox.Show("关掉KCV后才生效(￣ε(#￣)☆╰╮(￣▽￣///)");
+                u.Close();
             }
         }
-
 
 
         public override string Name
@@ -454,103 +498,6 @@ namespace ProvissyTools
             //this.BattleWatcher = new BattleWatcher(KanColleClient.Current.Proxy);   //activate battleWatcher
 
         }
-
-
-
-        /// <summary>
-        /// Current Version and Update checker.
-        /// </summary>
-        private string keyWord = "#14102803#";
-        public const string Curversion = "#14102803#";
-        #region Update Checker
-
-
-        private void checkToolUpdate()
-        {
-            try
-            {
-                string str;
-                string allFile;
-                string fileContent;
-                bool flag = false;
-                long SPosition = 0;
-                FileStream FStream;
-                if (File.Exists("check"))
-                {
-                    try { this.deletefile(); }
-                    catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-                    FStream = new FileStream("check", FileMode.Create);
-                    SPosition = 0;
-                }
-                else
-                {
-                    FStream = new FileStream("check", FileMode.Create);
-                    SPosition = 0;
-                }
-                try
-                {
-                    HttpWebRequest myRequest = (HttpWebRequest)HttpWebRequest.Create("http://www.cnblogs.com/provissy/p/4056570.html"/* + file*/);
-                    if (SPosition > 0)
-                        myRequest.AddRange((int)SPosition);
-                    Stream myStream = myRequest.GetResponse().GetResponseStream();
-                    byte[] btContent = new byte[512];
-                    int intSize = 0;
-                    intSize = myStream.Read(btContent, 0, 512);
-                    while (intSize > 0)
-                    {
-                        FStream.Write(btContent, 0, intSize);
-                        intSize = myStream.Read(btContent, 0, 512);
-                    }
-                    FStream.Close();
-                    myStream.Close();
-                    flag = true;        //返回true下载成功
-                }
-                catch
-                {
-                    FStream.Close();
-                    flag = false;       //返回false下载失败
-                }
-                if (flag)
-                {
-                    str = Environment.CurrentDirectory + @"\check";
-                    System.IO.FileStream myStreama = new FileStream(str, FileMode.Open);       //Read File.
-                    System.IO.StreamReader myStreamReader = new StreamReader(myStreama);
-                    fileContent = myStreamReader.ReadToEnd();
-                    myStreamReader.Close();
-                    allFile = fileContent;
-                    Regex reg = new Regex(keyWord);     //keyword.
-                    Match mat = reg.Match(allFile);
-                    if (mat.Success)
-                    {
-                        MessageBox.Show("已是最新版本！");
-                    }
-                    else
-                    {
-                        MessageBox.Show("ProvissyTools 有新更新可用！请留意百度 舰队collection吧 ，自动安装更新功能编写中。");      //Success.
-                    }
-
-                }
-                else
-                {
-                }
-
-            }
-            catch (Exception ex)
-            { MessageBox.Show("ERROR" + ex); }
-        }
-
-        private void deletefile()
-        {
-            try
-            {
-                File.Delete("check");
-            }
-            catch
-            {
-                MessageBox.Show("ERROR WHEN CHECKING UPDATE");
-            }
-        }
-        #endregion
 
         public void Update()
         {
@@ -598,6 +545,37 @@ namespace ProvissyTools
             this.SortieExp = (int)Math.Round(SeaExpTable[this.SelectedSea] * Multiplier);
             this.RemainingExp = this.TargetExp - this.CurrentExp;
             this.RunCount = (int)Math.Round(this.RemainingExp / (double)this.SortieExp);
+        }
+
+
+
+        private void nekoDetector(bool b)
+        {
+
+            IntPtr hWnd = GetForegroundWindow(); //获取当前窗口句柄
+            RECT rect = new RECT();
+            GetWindowRect(hWnd, ref rect);
+            int width = rect.Right - rect.Left; //窗口的宽度
+            int height = rect.Bottom - rect.Top; //窗口的高度
+            int x = rect.Left;
+            int y = rect.Top;
+            try
+            {
+                int a = Convert.ToInt32(WindowFromPoint(x + 100, y + 100));
+                GameWatcher gw = new GameWatcher((IntPtr)a);
+                if (b)
+                {
+                    gw.isEnabled = true;
+                }
+                else
+                {
+                    gw.isEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR" + ex.ToString());
+            }
         }
 
 
@@ -660,24 +638,5 @@ namespace ProvissyTools
                 return (Math.Ceiling((double)(map.api_eventmap.api_now_maphp - lastBossHp) / normalBossHp) + 1) + "回";
             }
         }
-
-        //public INotifier GetNotifier()
-        //{
-        //    MessageBox.Show("clicked");
-        //    string c = UniversalConstants.CurrentDirectory;
-        //    if (!Directory.Exists(c + @"\Sounds"))
-        //    {
-        //        Directory.CreateDirectory(c + @"\Sounds");
-        //        DirectoryInfo dir = new DirectoryInfo(c + @"\Sounds");
-        //        dir.CreateSubdirectory("Construction");
-        //        dir.CreateSubdirectory("Critical Ship Warning");
-        //        dir.CreateSubdirectory("Expedition");
-        //        dir.CreateSubdirectory("Fatigue Recovery Completed");
-        //        dir.CreateSubdirectory("Repairyard");
-        //        dir.CreateSubdirectory("Updater");
-        //    }
-        //    Process.Start(c + @"\Sounds");
-
-        //}
     }
 }

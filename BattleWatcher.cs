@@ -18,7 +18,7 @@ namespace ProvissyTools
 {
     public class BattleWatcher : NotificationObject
     {
-        public bool EnableLogging = true;
+        //public bool EnableLogging = true;
         //private bool waitingForShip;
         //private int dockid;
         //private readonly int[] shipmats;

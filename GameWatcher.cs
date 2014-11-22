@@ -27,6 +27,8 @@ namespace ProvissyTools
         const int WM_LBUTTONUP = 0x202;
 
 
+
+
         [DllImport("user32.dll")]
         static extern bool SetCursorPos(int X, int Y);
         [DllImport("user32.dll")]
@@ -212,6 +214,7 @@ namespace ProvissyTools
         {
             if (isEnabled)
             {
+                
                 int[] i = CaptureWindowToFile(HWND);
                 int[] n = GetHisogram(b);
                 float f = GetResult(i, n);
@@ -233,10 +236,10 @@ namespace ProvissyTools
 
         void timer2_Tick(object sender, EventArgs e)
         {
-            PostMessage((int)HWND, WM_LBUTTONDOWN, (uint)0, MAKELONG(623, 406));
-            PostMessage((int)HWND, WM_LBUTTONUP, (uint)0, MAKELONG(623, 406));
+            //PostMessage((int)HWND, WM_LBUTTONDOWN, (uint)0, MAKELONG(623, 430));
+            //PostMessage((int)HWND, WM_LBUTTONUP, (uint)0, MAKELONG(623, 430));
 
-            IntPtr awin = GetForegroundWindow(); //获取当前窗口句柄
+            IntPtr awin = HWND; //获取当前窗口句柄
             RECT rect = new RECT();
             GetWindowRect(awin, ref rect);
             int width = rect.Right - rect.Left; //窗口的宽度
@@ -244,7 +247,7 @@ namespace ProvissyTools
             int x = rect.Left;
             int y = rect.Top;
 
-            SetCursorPos(x + 610, y + 457);
+            SetCursorPos(x + 623, y + 406);
             mouse_event(MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
             mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
 

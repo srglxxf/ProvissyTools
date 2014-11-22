@@ -27,7 +27,7 @@ namespace ProvissyTools
     /// </summary>
     public partial class UpdateNotifyer : Window
     {
-        private string keyWord = "#14112101#";
+        private string keyWord = "#14112201#";
         private System.Timers.Timer timer = new System.Timers.Timer(500000);
         private short chk;
         //public UpdateNotifyer()
@@ -39,19 +39,14 @@ namespace ProvissyTools
         //    t.Start();
         //}
 
-        public UpdateNotifyer(bool b)
+        public UpdateNotifyer()
         {
-            
-            if (b)
-            {
                 InitializeComponent();
                 timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
                 timer.Start();
                 Thread t = new Thread(() => CHK_Update( UniversalConstants.CurrentDirectory + "check.txt"));
                 t.Start();
                 this.ShowInTaskbar = false;
-            }
-
         }
 
 
