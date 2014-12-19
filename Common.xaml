@@ -76,6 +76,11 @@
 				Value="{DynamicResource ActiveForegroundBrushKey}" />
     </Style>
 
+    <Style TargetType="{x:Type Label}">
+        <Setter Property="Foreground"
+				Value="{DynamicResource ActiveForegroundBrushKey}" />
+    </Style>
+
     <Style x:Key="SettingsHeaderTextStyleKey"
 		   TargetType="{x:Type TextBlock}"
 		   BasedOn="{StaticResource HeaderTextStyleKey}">

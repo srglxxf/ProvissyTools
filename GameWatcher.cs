@@ -17,17 +17,8 @@ namespace ProvissyTools
     class GameWatcher
     {
 
-        //private ICommand _RefreshNavigator;
-        //public ICommand RefreshNavigator
-        //{
-        //    get { return _RefreshNavigator; }
-        //}
-
         const int WM_LBUTTONDOWN = 0x201;
         const int WM_LBUTTONUP = 0x202;
-
-
-
 
         [DllImport("user32.dll")]
         static extern bool SetCursorPos(int X, int Y);
@@ -60,10 +51,10 @@ namespace ProvissyTools
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
-            public int Left; //最左坐标
-            public int Top; //最上坐标
-            public int Right; //最右坐标
-            public int Bottom; //最下坐标
+            public int Left; 
+            public int Top; 
+            public int Right; 
+            public int Bottom; 
         }
 
         [DllImport("User32.dll", EntryPoint = "PostMessage")]
@@ -188,7 +179,6 @@ namespace ProvissyTools
         #endregion
 
 
-
         DispatcherTimer timer = new DispatcherTimer();
         DispatcherTimer timer2 = new DispatcherTimer();
 
@@ -208,7 +198,7 @@ namespace ProvissyTools
             return ((((uint)x) << 16) | y); 
         }
 
-        Bitmap b = new Bitmap("nekoError.png");
+        Bitmap b = new Bitmap(UniversalConstants.CurrentDirectory + @"\ProvissyTools\nekoError.png");
 
         void timer_Tick(object sender, EventArgs e)
         {
@@ -239,15 +229,23 @@ namespace ProvissyTools
             //PostMessage((int)HWND, WM_LBUTTONDOWN, (uint)0, MAKELONG(623, 430));
             //PostMessage((int)HWND, WM_LBUTTONUP, (uint)0, MAKELONG(623, 430));
 
-            IntPtr awin = HWND; //获取当前窗口句柄
+            IntPtr awin = HWND; 
             RECT rect = new RECT();
             GetWindowRect(awin, ref rect);
-            int width = rect.Right - rect.Left; //窗口的宽度
-            int height = rect.Bottom - rect.Top; //窗口的高度
+            int width = rect.Right - rect.Left; 
+            int height = rect.Bottom - rect.Top; 
             int x = rect.Left;
             int y = rect.Top;
 
             SetCursorPos(x + 623, y + 406);
+            mouse_event(MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
+            mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
+            mouse_event(MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
+            mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
+            mouse_event(MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
+            mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
+            mouse_event(MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
+            mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
             mouse_event(MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
             mouse_event(MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
 
@@ -259,103 +257,56 @@ namespace ProvissyTools
 
         public int[] GetHisogram(Bitmap img)
         {
-
             BitmapData data = img.LockBits(new System.Drawing.Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
             int[] histogram = new int[256];
-
             unsafe
             {
-
                 byte* ptr = (byte*)data.Scan0;
-
                 int remain = data.Stride - data.Width * 3;
-
                 for (int i = 0; i < histogram.Length; i++)
-
                     histogram[i] = 0;
-
                 for (int i = 0; i < data.Height; i++)
                 {
-
                     for (int j = 0; j < data.Width; j++)
                     {
-
                         int mean = ptr[0] + ptr[1] + ptr[2];
-
                         mean /= 3;
-
                         histogram[mean]++;
-
                         ptr += 3;
-
                     }
-
                     ptr += remain;
-
                 }
-
             }
-
             img.UnlockBits(data);
-
             return histogram;
-
         }
-
-
-
-        //计算相减后的绝对值
 
         private float GetAbs(int firstNum, int secondNum)
         {
-
             float abs = Math.Abs((float)firstNum - (float)secondNum);
-
             float result = Math.Max(firstNum, secondNum);
-
             if (result == 0)
-
                 result = 1;
-
             return abs / result;
-
         }
-
-
-
-        //最终计算结果
 
         public float GetResult(int[] firstNum, int[] scondNum)
         {
-
             if (firstNum.Length != scondNum.Length)
             {
-
                 return 0;
-
             }
-
             else
             {
-
                 float result = 0;
-
                 int j = firstNum.Length;
-
                 for (int i = 0; i < j; i++)
                 {
-
                     result += 1 - GetAbs(firstNum[i], scondNum[i]);
-
                     Console.WriteLine(i + "----" + result);
-
                 }
-
                 return result / j;
-
             }
-
         }      
     }
 }

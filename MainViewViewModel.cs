@@ -21,6 +21,8 @@ using System.ComponentModel.Composition;
 using Grabacr07.KanColleViewer.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Management;
+using MetroRadiance;
 
 namespace ProvissyTools
 {
@@ -387,7 +389,7 @@ namespace ProvissyTools
 
         #endregion
 
-        #region EnableSoundNotify 変更通知プロパティ
+        #region CurrentEnableSoundNotify 変更通知プロパティ
 
         public bool CurrentEnableSoundNotify
         {
@@ -403,25 +405,7 @@ namespace ProvissyTools
             }
         }
 
-        #endregion
 
-        #region EnableAutoUpdateNotify 変更通知プロパティ
-
-        private bool _EnableAutoUpdateNotify;
-
-        public bool EnableAutoUpdateNotify
-        {
-            get { return this._EnableAutoUpdateNotify; }
-            set
-            {
-                if (this._EnableAutoUpdateNotify != value)
-                {
-                    this.setAutoUpdateNotify(value);
-                    this._EnableAutoUpdateNotify = value;
-                    this.RaisePropertyChanged();
-                }
-            }
-        }
 
         #endregion
 
@@ -438,7 +422,6 @@ namespace ProvissyTools
                 {
                     nekoDetector(value);
                     _CurrentNekoDetector = value;
-                    //ProvissyToolsSettings.Current.Save();
                     this.RaisePropertyChanged();
                 }
             }
@@ -446,19 +429,44 @@ namespace ProvissyTools
 
         #endregion
 
-        UpdateNotifyer u = new UpdateNotifyer();
+        #region CurrentIsDarkTheme 変更通知プロパティ
 
-        private void setAutoUpdateNotify(bool b)
+        public bool CurrentIsDarkTheme
         {
-            if (b)
+            get { return ProvissyToolsSettings.Current.IsDarkTheme; }
+            set
             {
-                u.Show();
-            }
-            else
-            {
-                u.Close();
+                if (ProvissyToolsSettings.Current.IsDarkTheme != value)
+                {
+                    if (value) ThemeService.Current.ChangeTheme(Theme.Dark);
+                    ProvissyToolsSettings.Current.IsDarkTheme = value;
+                    ProvissyToolsSettings.Current.Save();
+                    this.RaisePropertyChanged();
+                }
             }
         }
+
+        #endregion
+
+        #region CurrentIsLightTheme 変更通知プロパティ
+
+        public bool CurrentIsLightTheme
+        {
+            get { return ProvissyToolsSettings.Current.IsLightTheme; }
+            set
+            {
+                if (ProvissyToolsSettings.Current.IsLightTheme != value)
+                {
+                    if (value) ThemeService.Current.ChangeTheme(Theme.Light);
+                    ProvissyToolsSettings.Current.IsLightTheme = value;
+                    ProvissyToolsSettings.Current.Save();
+                    this.RaisePropertyChanged();
+                }
+            }
+        }
+
+        #endregion
+
 
 
         public override string Name
@@ -470,6 +478,12 @@ namespace ProvissyTools
         public Logger Logger { get; private set; }
         public Counter Counter { get; private set; }
         public BattleWatcher BattleWatcher { get; private set; }
+
+        WebClient wClient = new WebClient();
+        
+        DispatcherTimer timer = new DispatcherTimer();
+
+
         //Constructor.
         public MainViewViewModel()
         {
@@ -496,6 +510,85 @@ namespace ProvissyTools
             this.Update();
             this.Logger = new Logger(KanColleClient.Current.Proxy);   //activate logger
             //this.BattleWatcher = new BattleWatcher(KanColleClient.Current.Proxy);   //activate battleWatcher
+            //Grabacr07.KanColleViewer.App.Current.Startup += new StartupEventHandler(kcvLoadCompleted);
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Interval = TimeSpan.FromSeconds(5);
+            timer.Start();
+            //Thread t = new Thread(uploadConfig);
+            //t.Start();
+
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            timer.Stop();
+            Grabacr07.KanColleViewer.App.Current.MainWindow.Closing += new System.ComponentModel.CancelEventHandler(kcvCanceling);
+        }
+
+        private void kcvCanceling(object o ,System.ComponentModel.CancelEventArgs e)
+        {
+            MessageBoxResult mbr = MessageBox.Show("确定要退出KCV么？", "ProvissyTools提示", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if(mbr == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        //private void uploadConfig()
+        //{
+        //    Microsoft.VisualBasic.Devices.Computer c = new Microsoft.VisualBasic.Devices.Computer();
+        //    Random r = new Random();
+        //    int identity = r.Next();
+        //    WebClient ww = new WebClient();
+        //    try
+        //    {
+        //        //int identity = randomIdentity;
+        //        if (!File.Exists(UniversalConstants.CurrentDirectory + "PrvToolUsrUsg"))
+        //        {
+
+        //            //fc.UploadFile(bt, c.Name + c.Info.OSFullName + randomIdentity.ToString());
+        //            //File.Create(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
+        //            StreamWriter s = new StreamWriter(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
+        //            s.WriteLine(Guid.NewGuid().ToString());
+        //            s.Close();
+        //            Thread.Sleep(1000);
+        //            ww.UploadFile("http://provissy.com/UploadToUsageFolder.php", "POST", UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
+        //            File.Create(UniversalConstants.CurrentDirectory + "PrvToolUsrUsg");
+        //            File.Delete(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
+        //        }
+        //        else
+        //        {
+
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //int identity = randomIdentity;
+        //        //File.Delete(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
+        //        //MessageBox.Show(ex.ToString());
+        //    }
+        //}
+
+        public String GetCpuID()
+        {
+            try
+            {
+                ManagementClass mc = new ManagementClass("Win32_Processor");
+                ManagementObjectCollection moc = mc.GetInstances();
+
+                String strCpuID = null;
+                foreach (ManagementObject mo in moc)
+                {
+                    strCpuID = mo.Properties["ProcessorId"].Value.ToString();
+                    break;
+                }
+                return strCpuID;
+            }
+            catch
+            {
+                return "";
+            }
 
         }
 
@@ -546,8 +639,6 @@ namespace ProvissyTools
             this.RemainingExp = this.TargetExp - this.CurrentExp;
             this.RunCount = (int)Math.Round(this.RemainingExp / (double)this.SortieExp);
         }
-
-
 
         private void nekoDetector(bool b)
         {

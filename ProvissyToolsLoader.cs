@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grabacr07.KanColleViewer.Composition;
 using Grabacr07.KanColleWrapper;
+using System.IO;
 
 namespace ProvissyTools
 {
@@ -14,20 +15,35 @@ namespace ProvissyTools
     [ExportMetadata("Description", "Provissy KCV Tools")]
 	[ExportMetadata("Version", "1.0")]
 	[ExportMetadata("Author", "@Provissy")]
-	public class ProvissyTools : IToolPlugin
+	public class ProvissyToolsLoader : IToolPlugin
 	{
-        public ProvissyTools()
+        public ProvissyToolsLoader()
         {
             
+            if (File.Exists(ProvissyToolsSettings.usageRecordPath))
+            {
+                StreamReader s = new StreamReader(ProvissyToolsSettings.usageRecordPath);
+                string versionVerify = s.ReadLine();
+                s.Close();
+                if (versionVerify == "3.0Preview")
+                {
+                    ProvissyToolsSettings.Load();
+                }
+                else
+                {
+                    Welcome w = new Welcome { DataContext = new ProvissyToolsSettings() };
+                    w.ShowDialog();
+                }
+            }
+            else
+            {
+                Welcome w = new Welcome { DataContext = new ProvissyToolsSettings() };
+                w.ShowDialog();
+            }
+
         }
 
-		private readonly MainViewViewModel viewmodel = new MainViewViewModel
-		{
-            
-            MapInfoProxy = new MapInfoProxy()
-
-        };
-
+        MainView mainView = new MainView { DataContext = new MainViewViewModel { MapInfoProxy = new MapInfoProxy() } };
 		public string ToolName
 		{
             get { return "ProvissyTools"; }
@@ -35,54 +51,54 @@ namespace ProvissyTools
 
 		public object GetSettingsView()
 		{
-			return null;
+            return null;
 		}
 
 		public object GetToolView()
 		{
-			return new MainView { DataContext = this.viewmodel, };
+            return mainView;
 		}
 	}
 
 
 
     [Export(typeof(INotifier))]
-    [ExportMetadata("Title", "ProvissyNotifyer")]
-    [ExportMetadata("Description", "Provissy Notifyer")]
+    [ExportMetadata("Title", "ProvissyNotifier")]
+    [ExportMetadata("Description", "Provissy Notifier")]
     [ExportMetadata("Version", "1.0")]
     [ExportMetadata("Author", "@Provissy")]
     public class WindowsNotifier : INotifier
     {
         private readonly INotifier notifier;
-        private bool checker;
+        //private bool checker;
         
         public WindowsNotifier()
         {
-            ProvissyToolsSettings.Load();
-            checker = ProvissyToolsSettings.Current.EnableSoundNotify;
-            if (!checker)
-                return;
+            //ProvissyToolsSettings.Load();
+            //checker = ProvissyToolsSettings.Current.EnableSoundNotify;
+            //if (!checker)
+            //    return;
             this.notifier =  new Windows7Notifier();
         }
 
         public void Dispose()
         {
-            if (!checker)
-                return;
+            //if (!checker)
+            //    return;
             this.notifier.Dispose();
         }
 
         public void Initialize()
         {
-            if (!checker)
-                return;
+            //if (!checker)
+            //    return;
             this.notifier.Initialize();
         }
 
         public void Show(NotifyType type, string header, string body, Action activated, Action<Exception> failed = null)
         {
-            if (!checker)
-                return;
+            //if (!checker)
+            //    return;
             this.notifier.Show(type, header, body, activated, failed);
         }
 
