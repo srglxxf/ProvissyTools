@@ -73,7 +73,7 @@
                     <TextBlock Text="建造统计"
 							   Style="{StaticResource TabHeaderTextStyleKey}" />
                 </TabItem.Header>
-                <DataGrid x:Name="BuildDataGrid" Margin="10,0" IsReadOnly="True" Background="{DynamicResource ThemeBrushKey}">
+                <DataGrid x:Name="BuildDataGrid" Margin="10,0" IsReadOnly="True" Background="{DynamicResource ThemeBrushKey}" IsSynchronizedWithCurrentItem="True">
 
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell">
@@ -99,7 +99,8 @@
 
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeBrushKey}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}"/>
                         </Style>
                     </DataGrid.ColumnHeaderStyle>
 
@@ -110,7 +111,7 @@
                     <TextBlock Text="开发统计"
 							   Style="{StaticResource TabHeaderTextStyleKey}" />
                 </TabItem.Header>
-                <DataGrid x:Name="DevelopDataGrid" Margin="10,0" IsReadOnly="True" Background="{DynamicResource ThemeBrushKey}">
+                <DataGrid x:Name="DevelopDataGrid" Margin="10,0" IsReadOnly="True" Background="{DynamicResource ThemeBrushKey}" IsSynchronizedWithCurrentItem="True">
 
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell">
@@ -136,7 +137,8 @@
 
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeBrushKey}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}"/>
                         </Style>
                     </DataGrid.ColumnHeaderStyle>
 
@@ -147,7 +149,7 @@
                     <TextBlock Text="掉落统计"
 							   Style="{StaticResource TabHeaderTextStyleKey}" />
                 </TabItem.Header>
-                <DataGrid x:Name="DropDataGrid" Margin="10,0" IsReadOnly="True" Background="{DynamicResource ThemeBrushKey}">
+                <DataGrid x:Name="DropDataGrid" Margin="10,0" IsReadOnly="True" Background="{DynamicResource ThemeBrushKey}" IsSynchronizedWithCurrentItem="True">
 
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell">
@@ -173,7 +175,8 @@
 
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Background" Value="{DynamicResource ThemeBrushKey}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}"/>
                         </Style>
                     </DataGrid.ColumnHeaderStyle>
 

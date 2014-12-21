@@ -74,14 +74,15 @@ namespace ProvissyTools
             DataTable dt = new DataTable();
             for (int i = 0; i < lists[0].Count; i++)
             {
-                dt.Columns.Add();
+                dt.Columns.Add(lists[0][i]);
             }
             foreach (List<string> list in lists)
             {
                 DataRow dr = dt.NewRow();
+               
                 for (int i = 0; i < list.Count; i++)
                 {
-                    dr[i] = list[i];
+                    dr[i] = list[i]; 
                 }
                 dt.Rows.Add(dr);
             }

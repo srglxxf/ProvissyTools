@@ -90,7 +90,7 @@
                 <TextBlock x:Name="tbl_Introdution" Margin="10,95,10,0" VerticalAlignment="Top" FontSize="36" TextAlignment="Center"><Run Text="欢迎使用 Provissy Tools ！"/><LineBreak/><Run Text="Provissy Toolsへようこそ！"/></TextBlock>
                 <metro2:CallMethodButton x:Name="chkUpdateButton" Content="检查更新" Margin="0,0,7,0" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="84" Click="CallMethodButton_Click_1"/>
                 <metro2:CallMethodButton x:Name="btn_Donate" Content="捐赠！" HorizontalAlignment="Right" Margin="0,0,96,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_2" Width="61"/>
-                <Label x:Name="lb_UpdateInformation" Content="当前版本 V3.1.99" HorizontalAlignment="Right" Margin="0,0,7,29" VerticalAlignment="Bottom" MouseDown="Label_MouseDown" Cursor="Hand"/>
+                <Label x:Name="lb_UpdateInformation" Content="当前版本 V3.2" HorizontalAlignment="Right" Margin="0,0,7,29" VerticalAlignment="Bottom" MouseDown="Label_MouseDown" Cursor="Hand"/>
                 <metro2:CallMethodButton Content="前往贴吧页面" HorizontalAlignment="Right" Margin="0,0,162,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_3"/>
                 <metro2:CallMethodButton x:Name="btn_UpdateLog" Content="更新日志" HorizontalAlignment="Right" Margin="0,0,257,0" VerticalAlignment="Bottom" Width="93" Click="CallMethodButton_Click_8"/>
                 <Rectangle Fill="#FFFF3A00" Height="30" Margin="0,50,0,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
@@ -288,10 +288,7 @@
                         <DockPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <TextBlock Foreground="{DynamicResource ActiveForegroundBrushKey}" Text="比例："/>
-                                <metro:PromptTextBox Margin="4,0" Prompt="" Width="35">
-                                    <metro:PromptTextBox.Text>
-                                        <Binding Path="BrowserZoomFactor" Mode="TwoWay" TargetNullValue="100"/>
-                                    </metro:PromptTextBox.Text>
+                                <metro:PromptTextBox Text="{Binding BrowserZoomFactor}" Margin="4,0" Prompt="" Width="35" IsEnabled="False">
                                 </metro:PromptTextBox>
                                 <TextBlock Text="%" Foreground="{DynamicResource ActiveForegroundBrushKey}"/>
                             </StackPanel>

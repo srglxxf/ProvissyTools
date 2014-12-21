@@ -61,7 +61,7 @@ Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             try
             {
                 StreamWriter s = new StreamWriter(ProvissyToolsSettings.usageRecordPath);
-                s.WriteLine("3.1.4");
+                s.WriteLine("3.2");
                 s.Close();
                 }
             catch (Exception ex)
