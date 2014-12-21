@@ -76,7 +76,7 @@ namespace ProvissyTools
                     ProvissyToolsSettings.Current.BrowserZoomFactor = value;
                     ProvissyToolsSettings.Current.Save();
 
-                    (hostControl as KanColleHost).ZoomFactor = value / 100.0;
+                    //(hostControl as KanColleHost).ZoomFactor = value / 100.0;
 
                     this.RaisePropertyChanged();
                 }
@@ -218,7 +218,7 @@ namespace ProvissyTools
             }
         }
 
-        private void switchLayout()
+        public void switchLayout()
         {
             switch (ProvissyToolsSettings.Current.Layout)
             {

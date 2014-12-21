@@ -5,6 +5,9 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using System.Management;
+using Grabacr07.KanColleViewer.Composition;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ProvissyTools
 {
@@ -18,51 +21,78 @@ namespace ProvissyTools
             InitializeComponent();
         }
 
-        //private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        //{
-        //    ProvissyToolsSettings.Load();
-        //}
-
         private async void CallMethodButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             try
             {
-                MainContent.Visibility = Visibility.Hidden;
-                LoadingGrid.Visibility = Visibility.Visible;
-                if (!Directory.Exists("ProvissyTools"))
+                if (retryCount <= 3)
                 {
-                    Directory.CreateDirectory("ProvissyTools");
+                    Pgb_Progress.Value = 0;
+                    //Tbl_Introdution.Text = "正在重试...";
+                    Btn_Retry.Visibility = Visibility.Hidden;
+                    MainContent.Visibility = Visibility.Hidden;
+                    LoadingGrid.Visibility = Visibility.Visible;
+                    if (!Directory.Exists("ProvissyTools"))
+                    {
+                        Directory.CreateDirectory("ProvissyTools");
+                    }
+                    Pgb_Progress.Value += await downloadSoundDLL();
+                    Pgb_Progress.Value += await downloadNekoCompareImage();
+                    Pgb_Progress.Value += await downloadChartDll1();
+                    Pgb_Progress.Value += await downloadChartDll2();
+                    Pgb_Progress.Value += await uploadUsage();
+                    if (Directory.Exists("Sounds")) { Directory.Delete("Sounds", true); }
+                    Directory.CreateDirectory("Sounds");
+                    DirectoryInfo d = new DirectoryInfo("Sounds");
+                    d.CreateSubdirectory(NotifyType.Build.ToString());
+                    d.CreateSubdirectory(NotifyType.Expedition.ToString());
+                    d.CreateSubdirectory(NotifyType.Rejuvenated.ToString());
+                    d.CreateSubdirectory(NotifyType.Repair.ToString());
                 }
-                Pgb_Progress.Value += await downloadSoundDLL();
-                Pgb_Progress.Value += await SubActivateNekoDetector();
-                Pgb_Progress.Value += await downloadChartDll1();
-                Pgb_Progress.Value += await downloadChartDll2();
-                Pgb_Progress.Value += await uploadUsage();
-
-                ProvissyToolsSettings.Current.FirstTimeSet();
-                MessageBox.Show("Success!");
+                else
+                {
+                    MessageBoxResult m = MessageBox.Show("一直出现同一错误？点击确定前往百度网盘下载必要文件，并且解压至KCV目录，即可正常使用ProvissyTools。\n如果确认要这么做，点击确定后点击完成设置", "确认", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if(m == MessageBoxResult.Yes)
+                    {
+                        Process.Start("http://pan.baidu.com/s/1AkGkY;");
+                        Btn_Finish.Visibility = Visibility.Visible;
+                        retryCount = 0;
+                    }
+                }
             }
             catch(Exception ex)
             {
+                Tbl_Introdution.Text = "错误！请重试";
+                Btn_Retry.Visibility = Visibility.Visible;
                 MessageBox.Show(ex.ToString());
             }
         }
 
         private async Task<double> downloadSoundDLL()
         {
-           return await Task.Run(() =>
-            {
-                if (!File.Exists(UniversalConstants.CurrentDirectory + @"\NAudio.dll"))
-                {
-                    WebClient w = new WebClient();
-                    w.DownloadFile("http://provissy.com/NAudio.dll", UniversalConstants.CurrentDirectory + @"\NAudio.dll");
-                    return 20;
-                }
-                else
-                {
-                    return 20;
-                }
-            });
+            return await Task.Run(() =>
+             {
+                 WebClient w = new WebClient();
+                 w.DownloadFile("http://provissy.com/NAudio.dll", UniversalConstants.CurrentDirectory + @"\NAudio.dll");
+                 FileStream file = new FileStream(UniversalConstants.CurrentDirectory + @"\NAudio.dll", System.IO.FileMode.Open);
+                 MD5 md5 = new MD5CryptoServiceProvider();
+                 byte[] retVal = md5.ComputeHash(file);
+                 file.Close();
+                 StringBuilder sb = new StringBuilder();
+                 for (int i = 0; i < retVal.Length; i++)
+                 {
+                     sb.Append(retVal[i].ToString("x2"));
+                 }
+                 if (string.Equals(sb.ToString(), "F6FFB14117E3E209E4BDDEDBB8E952B9"))
+                 {
+                     return 20;
+                 }
+                 else
+                 {
+                     return 20;
+                 }
+                 
+             });
         }
 
         private async Task<double> downloadChartDll1()
@@ -70,17 +100,24 @@ namespace ProvissyTools
             return await Task.Run(() =>
             {
                 WebClient w = new WebClient();
-                if (File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
+                w.DownloadFile("http://provissy.com/WPFToolkit.dll", UniversalConstants.CurrentDirectory + @"\WPFToolkit.dll");
+                FileStream file = new FileStream(UniversalConstants.CurrentDirectory + @"\WPFToolkit.dll", System.IO.FileMode.Open);
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(file);
+                file.Close();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
                 {
-                    File.Delete(UniversalConstants.CurrentDirectory + "WPFToolkit.dll");
-                    w.DownloadFile("http://provissy.com/WPFToolkit.dll", UniversalConstants.CurrentDirectory + @"\WPFToolkit.dll");
+                    sb.Append(retVal[i].ToString("x2"));
                 }
-
+                if (string.Equals(sb.ToString(), "195ED09E0B4F3B09EA4A3B67A0D3F396"))
+                {
+                    return 20;
+                }
                 else
                 {
-                    w.DownloadFile("http://provissy.com/WPFToolkit.dll", UniversalConstants.CurrentDirectory + @"\WPFToolkit.dll");
-                } 
-                return 20;
+                    return 20;
+                }
             });
         }
 
@@ -89,30 +126,44 @@ namespace ProvissyTools
             return await Task.Run(() =>
             {
                 WebClient w = new WebClient();
-                if (File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll"))
+                w.DownloadFile("http://provissy.com/System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory + @"\System.Windows.Controls.DataVisualization.Toolkit.dll");
+                FileStream file = new FileStream(UniversalConstants.CurrentDirectory + @"\System.Windows.Controls.DataVisualization.Toolkit.dll", System.IO.FileMode.Open);
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(file);
+                file.Close();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
                 {
-                    File.Delete(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll");
-                    w.DownloadFile("http://provissy.com/System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory + @"\System.Windows.Controls.DataVisualization.Toolkit.dll");
+                    sb.Append(retVal[i].ToString("x2"));
                 }
-
+                if (string.Equals(sb.ToString(), "6813EBECD58E557E1D65C08E2B1030AF"))
+                {
+                    return 20;
+                }
                 else
                 {
-                    w.DownloadFile("http://provissy.com/System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory + @"\System.Windows.Controls.DataVisualization.Toolkit.dll");
+                    return 20;
                 }
-                return 20;
             });
         }
 
-        private async Task<double> SubActivateNekoDetector()
+        private async Task<double> downloadNekoCompareImage()
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(UniversalConstants.CurrentDirectory + @"\ProvissyTools\nekoError.png"))
+                WebClient w = new WebClient();
+                w.DownloadFile("http://provissy.com/nekoError.png", UniversalConstants.CurrentDirectory + @"\ProvissyTools\nekoError.png");
+                FileStream file = new FileStream(UniversalConstants.CurrentDirectory + @"\ProvissyTools\nekoError.png", System.IO.FileMode.Open);
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(file);
+                file.Close();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
                 {
-                    WebClient w = new WebClient();
-                    string pathURL = "http://provissy.com/nekoError.png";
-                    string pathLocal = UniversalConstants.CurrentDirectory + @"\ProvissyTools\nekoError.png";
-                    w.DownloadFile(pathURL, pathLocal);
+                    sb.Append(retVal[i].ToString("x2"));
+                }
+                if (string.Equals(sb.ToString(), "3959048BC55B1C50F3A2106CF6BBA16F"))
+                {
                     return 20;
                 }
                 else
@@ -133,7 +184,6 @@ namespace ProvissyTools
                 StreamWriter s = new StreamWriter(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
                 s.WriteLine(Guid.NewGuid().ToString());
                 s.WriteLine(DateTime.Now.ToLongDateString() + DateTime.Now.ToLongTimeString());
-                s.WriteLine(GetIPAddress());
                 s.WriteLine(GetSystemType());
                 s.WriteLine(GetTotalPhysicalMemory());
                 s.Close();
@@ -143,23 +193,11 @@ namespace ProvissyTools
             });
         }
 
-        private void Btn_Finishi_Click(object sender, RoutedEventArgs e)
-        {
-            StreamWriter s = new StreamWriter(ProvissyToolsSettings.usageRecordPath);
-            s.WriteLine("3.0Preview");
-            s.Close();
-            System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("KanColleViewer");
-            foreach (System.Diagnostics.Process p in killprocess)
-            {
-                p.Kill();
-            }
-        }
-
         private void PgbValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if(Pgb_Progress.Value == 100)
             {
-                Btn_Finishi.Visibility = Visibility.Visible;
+                Btn_Finish.Visibility = Visibility.Visible;
             }
         }
 
@@ -190,39 +228,6 @@ namespace ProvissyTools
             }
         }
 
-        string GetIPAddress()
-        {
-            try
-            {
-                //获取IP地址
-                string st = "";
-                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
-                ManagementObjectCollection moc = mc.GetInstances();
-                foreach (ManagementObject mo in moc)
-                {
-                    if ((bool)mo["IPEnabled"] == true)
-                    {
-                        //st=mo["IpAddress"].ToString();
-                        System.Array ar;
-                        ar = (System.Array)(mo.Properties["IpAddress"].Value);
-                        st = ar.GetValue(0).ToString();
-                        break;
-                    }
-                }
-                moc = null;
-                mc = null;
-                return st;
-            }
-            catch
-            {
-                return "unknow";
-            }
-            finally
-            {
-            }
-
-        }
-
         string GetSystemType()
         {
             try
@@ -248,6 +253,21 @@ namespace ProvissyTools
             {
             }
 
+        }
+
+        private void TextBlock_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Clipboard.SetDataObject("linxunpei@hotmail.com");
+            MessageBox.Show("支付宝地址已复制！");
+        }
+
+        int retryCount = 0;
+
+        private void Btn_Retry_Click(object sender, RoutedEventArgs e)
+        {
+            CallMethodButton_Click(null, null);
+            Tbl_Introdution.Text = "正在重试...";
+            retryCount++;
         }
     }
 }

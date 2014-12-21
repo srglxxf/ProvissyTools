@@ -27,25 +27,26 @@
                 <GradientStop Offset="0.5" Color="LightBlue"></GradientStop>
             </LinearGradientBrush>
         </Grid.Background>
+        <Border metro:MetroWindow.IsCaptionBar="True" Panel.ZIndex="100" Height="35" VerticalAlignment="Top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <!--<controls:AppIcon Width="36" Height="36" Background="Transparent" AnchorVisibility="Collapsed" BandVisibility="Collapsed" />-->
+                <TextBlock Grid.Column="1" Text="Welcome To ProvissyTools" Style="{DynamicResource CaptionTextStyleKey}"  Margin="2,0,8,0" Foreground="White" />
+                <metro:SystemButtons Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" Foreground="Black"  />
+            </Grid>
+        </Border>
         <Grid x:Name="MainContent">
-            <Border metro:MetroWindow.IsCaptionBar="True" Panel.ZIndex="100" Height="35" VerticalAlignment="Top">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <!--<controls:AppIcon Width="36" Height="36" Background="Transparent" AnchorVisibility="Collapsed" BandVisibility="Collapsed" />-->
-                    <TextBlock Grid.Column="1" Text="Welcome To ProvissyTools" Style="{DynamicResource CaptionTextStyleKey}"  Margin="2,0,8,0" Foreground="White" />
-                    <metro:SystemButtons Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" Foreground="Black"  />
-                </Grid>
-            </Border>
+
             <TextBlock HorizontalAlignment="Left" Margin="10,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="White" FontSize="22"><Run Text="第一次使用ProvissyTools？"/><LineBreak/><Run Text="嗯。。。完成一些配置吧！"/></TextBlock>
             <Image HorizontalAlignment="Left" Height="150" Margin="471,219,0,0" VerticalAlignment="Top" Width="150" Source="DonateQR-Code.png"/>
             <TextBox HorizontalAlignment="Left" Height="151" Margin="371,69,0,0" TextWrapping="Wrap" Text="    这是一个用于KanColleViewer的插件，目前名字暂定为ProvissyTools，本插件在MIT许可协议下完全开源，并且不收取任何费用。&#xA;    我不为使用插件为您带来的任何损失承担责任，但是您可以将存在的问题反馈给我，我会及时修复。 &#xA;    本插件不会修改游戏的任何内容，也不会干涉游戏与服务器的交互，也就是不会为您带来任何风险&#xD;&#xA;    如果您有任何疑惑，可以在插件内打开贴吧的链接并且在贴吧回复我，或者发送邮件到provissy@gmail.com" VerticalAlignment="Top" Width="250" Background="{x:Null}" BorderBrush="Black" VerticalScrollBarVisibility="Visible"/>
             <TextBlock HorizontalAlignment="Left" Margin="371,40,0,0" TextWrapping="Wrap" Text="最终用户许可协议（EULA）" VerticalAlignment="Top" FontSize="16" Foreground="Black"/>
             <CheckBox x:Name="EnableSound" Content="在远征归来或者建造、维修完成时，用声音提醒我" HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="{Binding EnableSoundNotify}"/>
-            <CheckBox x:Name="EnableNullDrop" Content="记录掉落时，一并记录未掉落的出击" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Foreground="White"/>
+            <CheckBox x:Name="EnableNullDrop" Content="记录掉落时，一并记录未掉落的出击" IsChecked="{Binding EnableNullDropLogging}" HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Foreground="White"/>
 
             <GroupBox x:Name="gb_ThemeCollection" Header="您希望使用何种KanColleViewer主题？" HorizontalAlignment="Left" Margin="10,167,0,0" VerticalAlignment="Top" Height="70" Width="281" FontSize="14" Foreground="White">
                 <Grid>
@@ -64,15 +65,17 @@
 
             <metro2:CallMethodButton Content="完成设置" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="296,345,0,0" IsEnabled="{Binding Path=IsChecked, ElementName=cb_IsReadEULA , UpdateSourceTrigger=PropertyChanged}" FontSize="20" Width="175" Click="CallMethodButton_Click"/>
             <CheckBox x:Name="cb_IsReadEULA" Content="已阅读并同意最终用户许可协议" HorizontalAlignment="Left" Margin="296,322,0,0" VerticalAlignment="Top" Foreground="Black"/>
-            <TextBlock HorizontalAlignment="Left" Margin="384,225,0,0" TextWrapping="Wrap" Text="扫描右侧二维码或点击复制支付宝地址来捐赠" VerticalAlignment="Top" Height="92" Width="95" FontSize="16" Foreground="Black"/>
+            <TextBlock HorizontalAlignment="Left" Margin="384,225,0,0" TextWrapping="Wrap" Text="扫描右侧二维码或点击复制支付宝地址来捐赠" VerticalAlignment="Top" Height="92" Width="95" FontSize="16" Foreground="Black" MouseDown="TextBlock_MouseDown" Cursor="Hand"/>
             <TextBlock HorizontalAlignment="Left" Margin="10,348,0,0" TextWrapping="Wrap" Text="Written by @provissy , 2014" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+            <TextBlock Margin="0,366,25,-23" TextWrapping="Wrap" Text="当前版本：3.1.5+" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="16"/>
 
         </Grid>
 
         <Grid x:Name="LoadingGrid" Visibility="Hidden">
-            <TextBlock Margin="0,78,0,0" Text="正在初始化，请稍后。。。" VerticalAlignment="Top" TextAlignment="Center" FontSize="36" Foreground="White"/>
+            <TextBlock x:Name="Tbl_Introdution" Margin="0,78,0,0" Text="正在初始化，请稍后。。。" VerticalAlignment="Top" TextAlignment="Center" FontSize="36" Foreground="White"/>
             <ProgressBar x:Name="Pgb_Progress" HorizontalAlignment="Left" Height="20" Margin="100,178,0,0" VerticalAlignment="Top" Width="418" Value="{Binding InitializeProgress}" ValueChanged="PgbValueChanged"/>
-            <metro2:CallMethodButton x:Name="Btn_Finishi" HorizontalAlignment="Left" Height="43" Margin="443,326,0,0" VerticalAlignment="Top"  Content="完成！点击继续！" FontSize="20" Visibility="Hidden" Click="Btn_Finishi_Click"/>
+            <metro2:CallMethodButton x:Name="Btn_Finish" HorizontalAlignment="Left" Height="43" Margin="443,326,0,0" VerticalAlignment="Top"  Content="完成！点击继续！" FontSize="20" Visibility="Hidden" MethodName="FirstTimeSave"/>
+            <metro2:CallMethodButton x:Name="Btn_Retry" Content="重试" HorizontalAlignment="Left" Margin="100,228,0,0" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" Click="Btn_Retry_Click"/>
 
         </Grid>
 

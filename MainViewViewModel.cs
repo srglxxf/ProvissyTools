@@ -405,8 +405,6 @@ namespace ProvissyTools
             }
         }
 
-
-
         #endregion
 
         #region NekoDetector 変更通知プロパティ
@@ -534,62 +532,24 @@ namespace ProvissyTools
             }
         }
 
-        //private void uploadConfig()
-        //{
-        //    Microsoft.VisualBasic.Devices.Computer c = new Microsoft.VisualBasic.Devices.Computer();
-        //    Random r = new Random();
-        //    int identity = r.Next();
-        //    WebClient ww = new WebClient();
-        //    try
-        //    {
-        //        //int identity = randomIdentity;
-        //        if (!File.Exists(UniversalConstants.CurrentDirectory + "PrvToolUsrUsg"))
-        //        {
-
-        //            //fc.UploadFile(bt, c.Name + c.Info.OSFullName + randomIdentity.ToString());
-        //            //File.Create(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
-        //            StreamWriter s = new StreamWriter(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
-        //            s.WriteLine(Guid.NewGuid().ToString());
-        //            s.Close();
-        //            Thread.Sleep(1000);
-        //            ww.UploadFile("http://provissy.com/UploadToUsageFolder.php", "POST", UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
-        //            File.Create(UniversalConstants.CurrentDirectory + "PrvToolUsrUsg");
-        //            File.Delete(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
-        //        }
-        //        else
-        //        {
-
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //int identity = randomIdentity;
-        //        //File.Delete(UniversalConstants.CurrentDirectory + c.Name + c.Info.OSFullName + identity);
-        //        //MessageBox.Show(ex.ToString());
-        //    }
-        //}
-
-        public String GetCpuID()
+        public void clearProvissyTools()
         {
             try
             {
-                ManagementClass mc = new ManagementClass("Win32_Processor");
-                ManagementObjectCollection moc = mc.GetInstances();
-
-                String strCpuID = null;
-                foreach (ManagementObject mo in moc)
+                MessageBox.Show("清空设置后后将会关闭KanColleViewer！");
+                File.Delete(ProvissyToolsSettings.filePath);
+                File.Delete(ProvissyToolsSettings.usageRecordPath);
+                System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("KanColleViewer");
+                foreach (System.Diagnostics.Process p in killprocess)
                 {
-                    strCpuID = mo.Properties["ProcessorId"].Value.ToString();
-                    break;
+                    p.Kill();
                 }
-                return strCpuID;
             }
-            catch
+            catch(Exception ex)
             {
-                return "";
+                MessageBox.Show("Error ! " + ex.ToString());
             }
-
+           
         }
 
         public void Update()

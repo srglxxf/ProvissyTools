@@ -10,6 +10,7 @@ using NAudio.Wave;
 using Settings = Grabacr07.KanColleViewer.Models.Settings;
 using StatusService = Grabacr07.KanColleViewer.Models.StatusService;
 using Volume = Grabacr07.KanColleViewer.Models.Volume;
+using Grabacr07.KanColleViewer.Composition;
 
 namespace ProvissyTools
 {
@@ -19,23 +20,14 @@ namespace ProvissyTools
         private DirectSoundOut SoundOut = null;
         string Main_folder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        public void SoundOutput(string header, bool IsWin8)
+        public void SoundOutput(NotifyType type, string header, bool IsWin8)
         {
-
-            DisposeWave();
-
+            if (!ProvissyToolsSettings.Current.EnableSoundNotify)
+                return;
             try
             {
-
-                var Audiofile = GetRandomSound(header);
-
-                if (!IsWin8 && Audiofile == null)
-                {
-                    SystemSounds.Beep.Play();
-                    return;
-                }
-                else if (IsWin8 && Audiofile == null)
-                    return;
+                DisposeWave();
+                var Audiofile = GetRandomSound(type.ToString());
 
                 float Volume = (float)99;
 
@@ -58,12 +50,12 @@ namespace ProvissyTools
             }
             catch (Exception ex)
             {
-                StatusService.Current.Notify("播放音频失败！: " + ex.Message);
+                //StatusService.Current.Notify("播放音频失败！: " + ex.Message);
             }
         }
 
 
-        public string GetRandomSound(string header)
+        public string GetRandomSound(string type)
         {
             try
             {
@@ -72,14 +64,14 @@ namespace ProvissyTools
                     Directory.CreateDirectory("Sounds");
                 }
 
-                if (!Directory.Exists("Sounds\\" + header))
+                if (!Directory.Exists("Sounds\\" + type))
                 {
-                    Directory.CreateDirectory("Sounds\\" + header);
+                    Directory.CreateDirectory("Sounds\\" + type);
                     return null;
                 }
 
-                List<string> FileList = Directory.GetFiles("Sounds\\" + header, "*.wav", SearchOption.AllDirectories)
-                    .Concat(Directory.GetFiles("Sounds\\" + header, "*.mp3", SearchOption.AllDirectories)).ToList();
+                List<string> FileList = Directory.GetFiles("Sounds\\" + type, "*.wav", SearchOption.AllDirectories)
+                    .Concat(Directory.GetFiles("Sounds\\" + type, "*.mp3", SearchOption.AllDirectories)).ToList();
 
                 if (FileList.Count > 0)
                 {
@@ -89,7 +81,7 @@ namespace ProvissyTools
             }
             catch (Exception ex)
             {
-                StatusService.Current.Notify("找不到音频文件！: " + ex.Message);
+                //StatusService.Current.Notify("找不到音频文件！: " + ex.Message);
             }
 
             return null;

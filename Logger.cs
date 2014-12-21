@@ -98,7 +98,18 @@ namespace ProvissyTools
         private void BattleResult(kcsapi_battleresult br)
         {
             if (br.api_get_ship == null)
-                return;
+                if (ProvissyToolsSettings.Current.EnableNullDropLogging)
+                {
+                    Log(LogType.ShipDrop, "{0},{1},{2},{3},{4}", DateTime.Now.ToString(this.LogTimestampFormat),
+                "无掉落",
+                br.api_quest_name,
+                br.api_enemy_info.api_deck_name,
+                br.api_win_rank);
+                }
+                else
+                {
+                    return;
+                }
 
             Log(LogType.ShipDrop, "{0},{1},{2},{3},{4}", DateTime.Now.ToString(this.LogTimestampFormat),
                 br.api_get_ship.api_ship_name,

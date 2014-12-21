@@ -13,24 +13,26 @@ namespace ProvissyTools
 	[Export(typeof(IToolPlugin))]
     [ExportMetadata("Title", "ProvissyTools")]
     [ExportMetadata("Description", "Provissy KCV Tools")]
-	[ExportMetadata("Version", "1.0")]
+	[ExportMetadata("Version", "3.1")]
 	[ExportMetadata("Author", "@Provissy")]
 	public class ProvissyToolsLoader : IToolPlugin
 	{
         public ProvissyToolsLoader()
         {
-            
             if (File.Exists(ProvissyToolsSettings.usageRecordPath))
             {
                 StreamReader s = new StreamReader(ProvissyToolsSettings.usageRecordPath);
                 string versionVerify = s.ReadLine();
                 s.Close();
-                if (versionVerify == "3.0Preview")
+                if (versionVerify == "3.1.4")
                 {
                     ProvissyToolsSettings.Load();
+                    mainView = new MainView { DataContext = new MainViewViewModel { MapInfoProxy = new MapInfoProxy() } };
                 }
                 else
                 {
+                    File.Delete(ProvissyToolsSettings.usageRecordPath);
+                    File.Delete(ProvissyToolsSettings.filePath);
                     Welcome w = new Welcome { DataContext = new ProvissyToolsSettings() };
                     w.ShowDialog();
                 }
@@ -40,10 +42,9 @@ namespace ProvissyTools
                 Welcome w = new Welcome { DataContext = new ProvissyToolsSettings() };
                 w.ShowDialog();
             }
-
         }
 
-        MainView mainView = new MainView { DataContext = new MainViewViewModel { MapInfoProxy = new MapInfoProxy() } };
+        MainView mainView;
 		public string ToolName
 		{
             get { return "ProvissyTools"; }
@@ -65,7 +66,7 @@ namespace ProvissyTools
     [Export(typeof(INotifier))]
     [ExportMetadata("Title", "ProvissyNotifier")]
     [ExportMetadata("Description", "Provissy Notifier")]
-    [ExportMetadata("Version", "1.0")]
+    [ExportMetadata("Version", "3.0")]
     [ExportMetadata("Author", "@Provissy")]
     public class WindowsNotifier : INotifier
     {

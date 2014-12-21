@@ -46,10 +46,12 @@ namespace ProvissyTools
         public delegate void UploadToCloudCompleteEventHandler();
         public delegate void DownloadToLocalCompleteEventHandler();
         public delegate void SignUpCompleteEventHandler();
+        public delegate void LoginCompleteEventHandler();
 
         public event UploadToCloudCompleteEventHandler UploadToCloudComplete;
         public event DownloadToLocalCompleteEventHandler DownloadToLocal;
         public event SignUpCompleteEventHandler SignUpComplete;
+        public event LoginCompleteEventHandler LoginComplete;
 
         public static MainView Instance { get; private set; }
         
@@ -65,7 +67,47 @@ namespace ProvissyTools
             WelcomePage.Visibility = Visibility.Visible;
             timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
             webClientForUpload.Headers.Add("Content-Type", "binary/octet-stream");
+            loadAccount();
+            Thread t = new Thread(versionChecker);
+            t.Start();
             Instance = this;
+        }
+
+        private void versionChecker()
+        {
+            try
+            {
+                WebClient checker = new WebClient();
+                string temp = "3.1";
+                string verify = checker.DownloadString("http://provissy.com/ProvissyToolsVersionChecker");
+                string verify2 = verify.Substring(0, temp.Length);
+                if (!String.Equals(verify2,temp))
+                {
+                    Action a = new Action(() =>
+                    {
+                        ContentGrid.Visibility = Visibility.Collapsed;
+                        WarningGrid.Visibility = Visibility.Visible;
+                    });
+                    this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
+                }
+            }
+            catch(Exception ex)
+            {
+                //MessageBox.Show("Checker Error" + ex.ToString());
+            }
+        }
+
+        private void loadAccount()
+        {
+            try
+            {
+                if (ProvissyToolsSettings.Current.UsernameOfPT == "")
+                    return;
+                Tbl_Username.Text = ProvissyToolsSettings.Current.UsernameOfPT;
+                RegisterOrLogin.Visibility = Visibility.Collapsed;
+                Btn_NaviToCloudBackup.IsEnabled = true;
+            }
+            catch { }
         }
 
 
@@ -110,7 +152,7 @@ namespace ProvissyTools
 
         bool newUpdateAvailable = false;
         
-        private string keyWord = "#14121701#";  
+        private string keyWord = "#14122117#";  
         WebClient wClient = new WebClient();
 
         #region Check update.
@@ -206,7 +248,7 @@ namespace ProvissyTools
 
         private void CallMethodButton_Click_3(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://tieba.baidu.com/p/3425677275");
+            Process.Start("http://tieba.baidu.com/p/3479005804");
         }
 
         private void CallMethodButton_Click_4(object sender, RoutedEventArgs e)
@@ -274,12 +316,12 @@ namespace ProvissyTools
             PrvToolsSettings.Visibility = Visibility.Hidden;
             AkiEvent2014.Visibility = Visibility.Hidden;
             ExpCal.Visibility = Visibility.Hidden;
-            StatisticsData.Visibility = Visibility.Hidden;
+            MyAccount.Visibility = Visibility.Hidden;
             DonateMe.Visibility = Visibility.Hidden;
             ErrorHandle.Visibility = Visibility.Hidden;
-            StatisticsBackup.Visibility = Visibility.Hidden;
             EventMapViewer.Visibility = Visibility.Hidden;
             Counter.Visibility = Visibility.Hidden;
+            CloudBackup.Visibility = Visibility.Hidden;
             LandscapeView.Visibility = Visibility.Hidden;
         }
 
@@ -333,136 +375,44 @@ namespace ProvissyTools
             PrvToolsSettings.Visibility = Visibility.Visible;
         }
 
+        private void Btn_NaviToCloudBackup_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            CloudBackup.Visibility = Visibility.Visible;
+        }
+
+        private void Btn_MyAccount_Click(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            MyAccount.Visibility = Visibility.Visible;
+        }
+
         private void funcbtn_OpenTwitter_Click(object sender, RoutedEventArgs e)
         {
-            //closeAllTabs();
-            //closeFuncTab();
-            Process.Start("https://m.twitter.com/KanColle_STAFF");
-            //BrowserPage.Visibility = Visibility.Visible;
+            Process.Start("https://twitter.com/KanColle_STAFF");
         }
 
         private void funcbtn_OpenWiki_Click(object sender, RoutedEventArgs e)
         {
-            //closeAllTabs();
-            //closeFuncTab(); 
-            ////WebProxy wp = new WebProxy("localhost", 8888);
             Process.Start("http://wikiwiki.jp/kancolle/");
-            //BrowserPage.Visibility = Visibility.Visible;
         }
 
         private void funcbtn_OpenDataView_Click(object sender, RoutedEventArgs e)
         {
-            closeAllTabs();
-            closeFuncTab();
-            StatisticsData.Visibility = Visibility.Visible;
+            try
+            {
+                StatisticWindow sw = new StatisticWindow { DataContext = new StatisticWindowViewModel() };
+                sw.Show();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         #endregion 
-
-        #region Read CSV File to DataGrid
-        private void loadCSV_Files(string filePath)
-        {
-            try
-            {
-                StatisticsDataGrid.ItemsSource = null;
-                OpenCommandHandler(filePath);
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler(ex);
-            }
-        }
-
-        private void OpenCommandHandler(string filePath)
-        {
-
-            string content = File.ReadAllText(filePath);
-            DataTable dt = GetCsvDataTable(content);
-            //double height = MainGrid.Height - 63;
-            //StatisticsDataGrid.Height = 200;
-            //StatisticsDataGrid.MaxHeight = 200;
-            //StatisticsDataGrid.MaxHeight = MainGrid.Height - 63;
-            StatisticsDataGrid.ItemsSource = dt.DefaultView;
-            //StatisticsDataGrid.MaxHeight = MainGrid.Height - 63;
-            //StatisticsDataGrid.Height = 200;
-            //StatisticsDataGrid.MaxHeight = 200;
-
-        }
-
-        private DataTable GetCsvDataTable(string content)
-        {
-            List<List<string>> lists = new List<List<string>>();
-            List<string> lastList = new List<string>();
-            lists.Add(lastList); //1行目を追加
-            lastList.Add("");
-            Regex regex = new Regex(",|\\r?\\n|[^,\"\\r\\n][^,\\r\\n]*|\"(?:[^\"]|\"\")*\"");
-            MatchCollection mc = regex.Matches(Regex.Replace(content, "\\r?\\n$", ""));
-            foreach (Match m in mc)
-            {
-                switch (m.Value)
-                {
-                    case ",":
-                        lastList.Add("");
-                        break;
-                    case "\n":
-                    case "\r\n":
-                        //改行コードの場合は行を追加する
-                        lastList = new List<string>();
-                        lists.Add(lastList);
-                        lastList.Add("");
-                        break;
-                    default:
-                        if (m.Value.StartsWith("\""))
-                        {
-                            //ダブルクォートで囲われている場合は最初と最後のダブルクォートを外し、
-                            //文字列中のダブルクォートのエスケープをアンエスケープする
-                            lastList[lastList.Count - 1] =
-                                m.Value.Substring(1, m.Value.Length - 2).Replace("\"\"", "\"");
-                        }
-                        else
-                        {
-                            lastList[lastList.Count - 1] = m.Value;
-                        }
-                        break;
-                }
-            }
-
-            // データテーブルにコピーする
-            DataTable dt = new DataTable();
-            for (int i = 0; i < lists[0].Count; i++)
-            {
-                dt.Columns.Add();
-            }
-            foreach (List<string> list in lists)
-            {
-                DataRow dr = dt.NewRow();
-                for (int i = 0; i < list.Count; i++)
-                {
-                    dr[i] = list[i];
-                }
-                dt.Rows.Add(dr);
-            }
-            return dt;
-        }
-
-        //ken so
-        private void CallMethodButton_Click_5(object sender, RoutedEventArgs e)
-        {
-            loadCSV_Files(UniversalConstants.CurrentDirectory + "ItemBuildLog.csv");
-        }
-
-        //kai ha tsu
-        private void CallMethodButton_Click_6(object sender, RoutedEventArgs e)
-        {
-            loadCSV_Files(UniversalConstants.CurrentDirectory + "ShipBuildLog.csv");
-        }
-
-        // do ro tsu pu
-        private void CallMethodButton_Click_7(object sender, RoutedEventArgs e)
-        {
-            loadCSV_Files(UniversalConstants.CurrentDirectory + "DropLog.csv");
-        }
-        #endregion
 
         private void CallMethodButton_Click_8(object sender, RoutedEventArgs e)
         {
@@ -475,32 +425,6 @@ namespace ProvissyTools
             MessageBox.Show("支付宝地址已复制！");
         }
 
-
-        private void CallMethodButton_Click_9(object sender, RoutedEventArgs e)
-        {
-            if (File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll") && File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
-            {
-                Window2 mc = new Window2();
-                mc.Show();
-            }
-            else if (!File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
-            { 
-                string pathURL = "http://provissy.com/WPFToolkit.dll";
-                string pathLocal = UniversalConstants.CurrentDirectory + @"\WPFToolkit.dll";
-                wClient.DownloadFile(pathURL, pathLocal);
-                Window2 mc = new Window2();
-                mc.Show();
-            }
-
-            else if (!File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll"))
-            {
-                string pathURL = "http://provissy.com/System.Windows.Controls.DataVisualization.Toolkit.dll";
-                string pathLocal = UniversalConstants.CurrentDirectory + @"\System.Windows.Controls.DataVisualization.Toolkit.dll";
-                wClient.DownloadFile(pathURL, pathLocal);
-                Window2 mc = new Window2();
-                mc.Show();
-            }
-        }
 
         private void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -665,77 +589,96 @@ namespace ProvissyTools
 
         #endregion
 
-        #region Could backup.
+        #region MyAccount Function.
 
-        private void btn_CloudBackup_Click(object sender, RoutedEventArgs e)
+        private bool isInLoginPage = false;
+
+        private void Btn_ClickToLogin_Click(object sender, RoutedEventArgs e)
         {
-            closeAllTabs();
-            StatisticsBackup.Visibility = Visibility.Visible;
-            if (File.Exists(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg"))
+            if (!isInLoginPage)
             {
-                tbl_Backup_Password.Visibility = Visibility.Hidden;
-                tbl_Backup_Username.Visibility = Visibility.Hidden;
-                tb_Backup_Username.Visibility = Visibility.Hidden;
-                psd_Backup_Password.Visibility = Visibility.Hidden;
-                btn_Backup_CreateAccount.Visibility = Visibility.Hidden;
-                btn_Backup_LocalToCloud.IsEnabled = true;
-                btn_Backup_CloudToLocal.IsEnabled = true;
-                StreamReader s = new StreamReader(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg");
-                lb_Backup_Username.Content = s.ReadLine();
-                s.Close();
+                isInLoginPage = true;
+                Tbl_PTAccountIntroduce.Text = "输入用户名和密码登录\n登录后可手动进行同步";
+                Btn_CreateAccount.Content = "登录";
+                Btn_ClickToLogin.Content = "注册新账户";
             }
             else
             {
-                btn_Backup_CloudToLocal.IsEnabled = false;
-                btn_Backup_LocalToCloud.IsEnabled = false;
+                isInLoginPage = false;
+                Tbl_PTAccountIntroduce.Text = "注册一个ProvissyTools账户吧！\n您将可以将统计信息和设置同步到云端\n以及享受云服务带来的便利";
+                Btn_CreateAccount.Content = "注册";
+                Btn_ClickToLogin.Content = "已有账户？点击登录";
             }
         }
 
-        private async void btn_Backup_CreateAccount_Click(object sender, RoutedEventArgs e)
+        private async void Btn_CreateAccount_Click(object sender, RoutedEventArgs e)
         {
-            if (tb_Backup_Username.Text == "" || psd_Backup_Password.Password == "")
+            if (isInLoginPage)
             {
-                MessageBox.Show("用户名或密码不能为空！");
-                return;
-            }
-            btn_Backup_CreateAccount.IsEnabled = false;
-            btn_Backup_CreateAccount.Content = "注册中...";
-            SignUpComplete += new SignUpCompleteEventHandler(signUpComplete);
-            try
-            {
-                await createAccount(tb_Backup_Username.Text, psd_Backup_Password.Password);
-            }
-            catch(Exception ex)
-            {
-                ErrorHandler(ex);
+                if (tb_Backup_Username.Text == "" || psd_Backup_Password.Password == "")
+                {
+                    MessageBox.Show("用户名或密码不能为空！");
+                    return;
+                }
+                Btn_CreateAccount.IsEnabled = false;
+                Btn_CreateAccount.Content = "正在登录...";
+                LoginComplete += new LoginCompleteEventHandler(loginComplete);
+                try
+                {
+                    await login(tb_Backup_Username.Text, psd_Backup_Password.Password);
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler(ex);
+                    Btn_CreateAccount.IsEnabled = true;
+                    Btn_CreateAccount.Content = "登录";
+                }
             }
 
-                 
+            else
+            {
+                if (tb_Backup_Username.Text == "" || psd_Backup_Password.Password == "")
+                {
+                    MessageBox.Show("用户名或密码不能为空！");
+                    return;
+                }
+                Btn_CreateAccount.IsEnabled = false;
+                Btn_CreateAccount.Content = "注册中...";
+                SignUpComplete += new SignUpCompleteEventHandler(signUpComplete);
+                try
+                {
+                    await createAccount(tb_Backup_Username.Text, psd_Backup_Password.Password);
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler(ex);
+                }
+            }
         }
 
         private async Task createAccount(string username , string password)
         {
-            await Task.Run(()=>
+            await Task.Run(() =>
             {
-                    if (!File.Exists(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg"))
-                    {
-                        var w = File.AppendText(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg");
-                        w.WriteLine(username);
-                        w.WriteLine(password);
-                        w.Close();
-                    }
-                    else
-                    {
-                        File.Delete(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg");
-                        var w = File.AppendText(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg");
-                        w.WriteLine(tb_Backup_Username.Text);
-                        w.WriteLine(psd_Backup_Password.Password);
-                        w.Close();
-                    }
-                    File.Copy(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg", UniversalConstants.CurrentDirectory + username, true);
-                    webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", UniversalConstants.CurrentDirectory + @"\" + username);
-                    //MessageBox.Show("用户创建成功");
-                    SignUpComplete();
+                if (!File.Exists(UniversalConstants.CurrentDirectory + @"\ProvissyTools\PrvToolsUsrCfg"))
+                {
+                    var w = File.AppendText(UniversalConstants.CurrentDirectory + @"\ProvissyTools\PrvToolsUsrCfg");
+                    //w.WriteLine(username);
+                    w.WriteLine(password);
+                    w.Close();
+                }
+                else
+                {
+                    File.Delete(UniversalConstants.CurrentDirectory + @"\ProvissyTools\PrvToolsUsrCfg");
+                    var w = File.AppendText(UniversalConstants.CurrentDirectory + @"\ProvissyTools\PrvToolsUsrCfg");
+                    //w.WriteLine(username);
+                    w.WriteLine(password);
+                    w.Close();
+                }
+                File.Copy(UniversalConstants.CurrentDirectory + @"\ProvissyTools\PrvToolsUsrCfg", UniversalConstants.CurrentDirectory + @"\ProvissyTools\" + username, true);
+                webClientForUpload.UploadFile("http://provissy.com/UploadToUserAccountsFolder.php", "POST", UniversalConstants.CurrentDirectory + @"\ProvissyTools\" + username);
+                File.Delete(UniversalConstants.CurrentDirectory + @"\ProvissyTools\" + username);
+                SignUpComplete();
             });
         }
 
@@ -743,14 +686,50 @@ namespace ProvissyTools
         {
             Action a = new Action(() =>
             {
-                tbl_Backup_Password.Visibility = Visibility.Hidden;
-                tbl_Backup_Username.Visibility = Visibility.Hidden;
-                tb_Backup_Username.Visibility = Visibility.Hidden;
-                psd_Backup_Password.Visibility = Visibility.Hidden;
-                btn_Backup_CreateAccount.Visibility = Visibility.Hidden;
-                btn_Backup_CloudToLocal.IsEnabled = true;
-                btn_Backup_LocalToCloud.IsEnabled = true;
-                lb_Backup_Username.Content = tb_Backup_Username.Text;
+                RegisterOrLogin.Visibility = Visibility.Hidden;
+                Btn_NaviToCloudBackup.IsEnabled = true;
+                Tbl_Username.Text = tb_Backup_Username.Text;
+                ProvissyToolsSettings.Current.UsernameOfPT = tb_Backup_Username.Text;
+                ProvissyToolsSettings.Current.Save();
+            });
+            this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
+        }
+
+
+        private async Task login(string username, string password)
+        {
+            await Task.Run(() =>
+            {
+                string downPass1 = wClient.DownloadString("http://provissy.com/UserAccounts/" + username);
+                string downPass2 = downPass1.Substring(0,password.Length);
+                //MessageBox.Show("NET::" + downPass2 +"::");
+                //MessageBox.Show("PSD::" + password + "::");
+                if(String.Equals(downPass2,password))
+                {                 
+                    LoginComplete();
+                }
+                else
+                {
+                    MessageBox.Show("用户名或密码错误！");
+                    Action a = new Action(() =>
+                    {
+                        Btn_CreateAccount.IsEnabled = true;
+                        Btn_CreateAccount.Content = "登录";
+                    });
+                    this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
+                }
+            });
+        }
+
+        private void loginComplete()
+        {
+            Action a = new Action(() =>
+            {
+                RegisterOrLogin.Visibility = Visibility.Hidden;
+                Btn_NaviToCloudBackup.IsEnabled = true;
+                Tbl_Username.Text = tb_Backup_Username.Text;
+                ProvissyToolsSettings.Current.UsernameOfPT = tb_Backup_Username.Text;
+                ProvissyToolsSettings.Current.Save();
             });
             this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
         }
@@ -775,30 +754,11 @@ namespace ProvissyTools
                 {
                     string l = UniversalConstants.CurrentDirectory;
                     string adress = "http://provissy.com/UserStatisticData/";
-                    //if (File.Exists(l + "ItemBuildLog.csv"))
-                    //{
-                    //    File.Delete(l + "ItemBuildLog.csv");
+                    //Auto replace.
                     wClient.DownloadFile(adress + "ItemBuildLog" + " - " + username + ".csv", l + "ItemBuildLog.csv");
-
-                    //}
-                    //if (File.Exists(l + "ShipBuildLog.csv"))
-                    //{
-                    //    File.Delete(l + "ShipBuildLog.csv");
                     wClient.DownloadFile(adress + "ShipBuildLog" + " - " + username + ".csv", l + "ShipBuildLog.csv");
-
-                    //}
-                    //if (File.Exists(l + "DropLog.csv"))
-                    //{
-                    //    File.Delete(l + "DropLog.csv");
                     wClient.DownloadFile(adress + "DropLog" + " - " + username + ".csv", l + "DropLog.csv");
-
-                    //}
-                    //if (File.Exists(l + "MaterialsLog.csv"))
-                    //{
-                    //    File.Delete(l + "MaterialsLog.csv");
                     wClient.DownloadFile(adress + "MaterialsLog" + " - " + username + ".csv", l + "MaterialsLog.csv");
-                    //}
-
                     DownloadToLocal();
                 });
         }
@@ -859,7 +819,6 @@ namespace ProvissyTools
             }
             
             UploadToCloudComplete();
-            //MessageBox.Show("备份成功！");
             });
         }
 
@@ -903,7 +862,7 @@ namespace ProvissyTools
             btn_AkiEvent_MapViewer.Content = "Check HP Of Event Map";
             tbl_Backup_Username.Text = "Username";
             tbl_Backup_Password.Text = "Password";
-            btn_Backup_CreateAccount.Content = "Sign Up";
+            //btn_Backup_CreateAccount.Content = "Sign Up";
             //lb_Backup_Introdution.Content = "KCV will get 'No Response' when syncing";
             btn_Backup_CloudToLocal.Content = "Cloud->Local";
             btn_Backup_LocalToCloud.Content = "Local->Cloud";
@@ -954,32 +913,11 @@ namespace ProvissyTools
             }
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private async void Btn_Warning_Update_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                string pathURL = "http://provissy.com/nekoError.png";
-                string pathLocal = UniversalConstants.CurrentDirectory + "nekoError.png";
-                wClient.DownloadFile(pathURL, pathLocal);
-                MessageBox.Show("激活成功！");
-            }
-            catch(Exception ex)
-            {
-                ErrorHandler(ex);
-            }
+            Btn_Warning_Update.Content = "正在更新...";
+            await updaterDownloader();
         }
-
-        private void UCLayoutUpdated(object sender, EventArgs e)
-        {
-            try
-            {
-                StatisticsDataGrid.MaxHeight = MainGrid.Height - 63;
-                StatisticsDataGrid.Height = MainGrid.Height - 63;
-            }
-            catch { }
-        }
-
-
     }
 }
 

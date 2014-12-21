@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Grabacr07.KanColleViewer.Composition;
 using Application = System.Windows.Application;
 using Grabacr07.KanColleViewer;
+using System.Diagnostics;
 
 namespace ProvissyTools
 {
@@ -36,6 +37,27 @@ namespace ProvissyTools
                     Icon = new Icon(stream),
                     Visible = true,
                 };
+                ContextMenu menu = new ContextMenu();
+
+                MenuItem closeItem = new MenuItem();
+                closeItem.Text = "退出 KanColleViewer（强制）";
+                closeItem.Click += new EventHandler(delegate
+                    {
+                        System.Diagnostics.Process[] killprocess = System.Diagnostics.Process.GetProcessesByName("KanColleViewer");
+                        foreach (System.Diagnostics.Process p in killprocess)
+                        {
+                            p.Kill();
+                        }
+                    });
+
+                MenuItem addItem = new MenuItem();
+                addItem.Text = "关闭计算机";
+                addItem.Click += new EventHandler(delegate { Process.Start("shutdown.exe", "-s -t 00"); });
+
+                menu.MenuItems.Add(addItem);
+                menu.MenuItems.Add(closeItem);
+
+                notifyIcon.ContextMenu = menu;
             }
         }
 
@@ -51,9 +73,9 @@ namespace ProvissyTools
                 this.activatedAction = (sender, args) => activated();
                 this.notifyIcon.BalloonTipClicked += this.activatedAction;
             }
-
-            sound.SoundOutput(header, false);
-            notifyIcon.ShowBalloonTip(1000, header, body, ToolTipIcon.None);
+            notifyIcon.ShowBalloonTip(2000, header, body, ToolTipIcon.Info);
+            sound.SoundOutput(type, header, false);
+            
         }
 
         public object GetSettingsView()

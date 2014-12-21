@@ -16,6 +16,7 @@ namespace ProvissyTools
 
             Current = this;
             MainWindow.Current.Closed += (sender, args) => this.Close();
+
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -26,6 +27,11 @@ namespace ProvissyTools
             ProvissyToolsSettings.Current.WindowHeight = this.ActualHeight;
 
             base.OnClosing(e);
+        }
+
+        private void GlowMetroWindow_Closing(object sender, CancelEventArgs e)
+        {
+            LandscapeViewModel.Instance.CurrentLayout = KCVContentLayout.Portrait;
         }
     }
 }
