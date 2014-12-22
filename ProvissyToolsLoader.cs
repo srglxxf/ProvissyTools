@@ -24,7 +24,7 @@ namespace ProvissyTools
                 StreamReader s = new StreamReader(ProvissyToolsSettings.usageRecordPath);
                 string versionVerify = s.ReadLine();
                 s.Close();
-                if (versionVerify == "3.1.4")
+                if (versionVerify == "3.2")
                 {
                     ProvissyToolsSettings.Load();
                     mainView = new MainView { DataContext = new MainViewViewModel { MapInfoProxy = new MapInfoProxy() } };

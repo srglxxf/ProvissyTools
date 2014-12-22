@@ -78,7 +78,7 @@ namespace ProvissyTools
             try
             {
                 WebClient checker = new WebClient();
-                string temp = "3.1";
+                string temp = "3.2";
                 string verify = checker.DownloadString("http://provissy.com/ProvissyToolsVersionChecker");
                 string verify2 = verify.Substring(0, temp.Length);
                 if (!String.Equals(verify2,temp))
