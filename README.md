@@ -7,4 +7,4 @@ So many functions in this plugin like statistic, backup, chart, sound notify, th
 
 Use the code under The MIT License.
 
-http://provissy.com
+http://provissy.com/provissytools/
