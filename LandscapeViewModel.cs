@@ -45,7 +45,7 @@ namespace ProvissyTools
                 await Task.Delay(5000);
 
                 switchLayout();
-                (hostControl as KanColleHost).ZoomFactor = this.BrowserZoomFactor / 100.0;
+                //(hostControl as KanColleHost).ZoomFactor = this.BrowserZoomFactor / 100.0;
             });
         }
 

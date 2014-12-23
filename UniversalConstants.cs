@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ProvissyTools
+﻿namespace ProvissyTools
 {
     class UniversalConstants
     {
-        public static string CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        public static string CurrentDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+        public const string CurrentVersion = "#14122203#";
     }
 }

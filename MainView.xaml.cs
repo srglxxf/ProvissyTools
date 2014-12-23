@@ -56,7 +56,7 @@ namespace ProvissyTools
         public static MainView Instance { get; private set; }
         
 
-        private System.Timers.Timer timer = new System.Timers.Timer(20000);
+        private System.Timers.Timer timer = new System.Timers.Timer(300000);
         System.Net.WebClient webClientForUpload = new System.Net.WebClient();
         public MainView()
         {
@@ -67,9 +67,8 @@ namespace ProvissyTools
             WelcomePage.Visibility = Visibility.Visible;
             timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
             webClientForUpload.Headers.Add("Content-Type", "binary/octet-stream");
+            timer.Start();
             loadAccount();
-            Thread t = new Thread(versionChecker);
-            t.Start();
             Instance = this;
         }
 
@@ -78,7 +77,7 @@ namespace ProvissyTools
             try
             {
                 WebClient checker = new WebClient();
-                string temp = "3.2";
+                string temp = "3.3";
                 string verify = checker.DownloadString("http://provissy.com/ProvissyToolsVersionChecker");
                 string verify2 = verify.Substring(0, temp.Length);
                 if (!String.Equals(verify2,temp))
@@ -141,18 +140,19 @@ namespace ProvissyTools
             (
                 DispatcherPriority.Normal, (Action)delegate()
                 {
-                    timer.Stop();
-                    lb_BBS_ShowState.Content = "自动刷新中";
-                    Thread t = new Thread(isAuto_forGetComments_Click);
-                    t.Start();
-                    timer.Start();
+                    if (ProvissyToolsSettings.Current.UsernameOfPT != "")
+                        btn_Backup_LocalToCloud_Click(null, null);
+                    //timer.Stop();
+                    //lb_BBS_ShowState.Content = "自动刷新中";
+                    //Thread t = new Thread(isAuto_forGetComments_Click);
+                    //t.Start();
+                    //timer.Start();
                 }
             );  
         }
 
         bool newUpdateAvailable = false;
         
-        private string keyWord = "#14122119#";  
         WebClient wClient = new WebClient();
 
         #region Check update.
@@ -192,7 +192,7 @@ namespace ProvissyTools
                     System.IO.StreamReader myStreamReader = new StreamReader(myStreama);
                     fileContent = myStreamReader.ReadToEnd();
                     myStreamReader.Close();
-                    Regex reg = new Regex(keyWord);     //keyword.
+                    Regex reg = new Regex(UniversalConstants.CurrentVersion);     //keyword.
                     Match mat = reg.Match(fileContent);
                     if (mat.Success)
                     {

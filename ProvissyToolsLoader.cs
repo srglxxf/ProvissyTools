@@ -19,6 +19,7 @@ namespace ProvissyTools
 	{
         public ProvissyToolsLoader()
         {
+            CommonHelper.StartupChecker();
             if (File.Exists(ProvissyToolsSettings.usageRecordPath))
             {
                 StreamReader s = new StreamReader(ProvissyToolsSettings.usageRecordPath);
@@ -65,8 +66,8 @@ namespace ProvissyTools
 
     [Export(typeof(INotifier))]
     [ExportMetadata("Title", "ProvissyNotifier")]
-    [ExportMetadata("Description", "Provissy Notifier")]
-    [ExportMetadata("Version", "3.0")]
+    [ExportMetadata("Description", "Notifiy with Balloon, Sound, Popup")]
+    [ExportMetadata("Version", "3.1")]
     [ExportMetadata("Author", "@Provissy")]
     public class WindowsNotifier : INotifier
     {
@@ -75,31 +76,21 @@ namespace ProvissyTools
         
         public WindowsNotifier()
         {
-            //ProvissyToolsSettings.Load();
-            //checker = ProvissyToolsSettings.Current.EnableSoundNotify;
-            //if (!checker)
-            //    return;
             this.notifier =  new Windows7Notifier();
         }
 
         public void Dispose()
         {
-            //if (!checker)
-            //    return;
             this.notifier.Dispose();
         }
 
         public void Initialize()
         {
-            //if (!checker)
-            //    return;
             this.notifier.Initialize();
         }
 
         public void Show(NotifyType type, string header, string body, Action activated, Action<Exception> failed = null)
         {
-            //if (!checker)
-            //    return;
             this.notifier.Show(type, header, body, activated, failed);
         }
 

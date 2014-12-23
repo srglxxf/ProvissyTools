@@ -25,7 +25,7 @@ namespace ProvissyTools
         {
             try
             {
-                if (retryCount <= 3)
+                if (retryCount <= 1)
                 {
                     Pgb_Progress.Value = 0;
                     //Tbl_Introdution.Text = "正在重试...";
@@ -89,7 +89,7 @@ namespace ProvissyTools
                  }
                  else
                  {
-                     return 20;
+                     throw new Exception("MD5不匹配！");
                  }
                  
              });
@@ -116,7 +116,7 @@ namespace ProvissyTools
                 }
                 else
                 {
-                    return 20;
+                    throw new Exception("MD5不匹配！");
                 }
             });
         }
@@ -142,7 +142,7 @@ namespace ProvissyTools
                 }
                 else
                 {
-                    return 20;
+                    throw new Exception("MD5不匹配！");
                 }
             });
         }
@@ -168,7 +168,7 @@ namespace ProvissyTools
                 }
                 else
                 {
-                    return 20;
+                    throw new Exception("MD5不匹配！");
                 }
             });
         }

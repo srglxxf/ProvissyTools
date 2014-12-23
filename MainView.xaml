@@ -90,7 +90,7 @@
                 <TextBlock x:Name="tbl_Introdution" Margin="10,95,10,0" VerticalAlignment="Top" FontSize="36" TextAlignment="Center"><Run Text="欢迎使用 Provissy Tools ！"/><LineBreak/><Run Text="Provissy Toolsへようこそ！"/></TextBlock>
                 <metro2:CallMethodButton x:Name="chkUpdateButton" Content="检查更新" Margin="0,0,7,0" Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="84" Click="CallMethodButton_Click_1"/>
                 <metro2:CallMethodButton x:Name="btn_Donate" Content="捐赠！" HorizontalAlignment="Right" Margin="0,0,96,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_2" Width="61"/>
-                <Label x:Name="lb_UpdateInformation" Content="当前版本 V3.2" HorizontalAlignment="Right" Margin="0,0,7,29" VerticalAlignment="Bottom" MouseDown="Label_MouseDown" Cursor="Hand"/>
+                <Label x:Name="lb_UpdateInformation" Content="当前版本 V3.3.1 (统计数据每5分钟自动备份至云端一次）" HorizontalAlignment="Right" Margin="0,0,7,29" VerticalAlignment="Bottom" MouseDown="Label_MouseDown" Cursor="Hand"/>
                 <metro2:CallMethodButton Content="前往贴吧页面" HorizontalAlignment="Right" Margin="0,0,162,0" VerticalAlignment="Bottom" Click="CallMethodButton_Click_3"/>
                 <metro2:CallMethodButton x:Name="btn_UpdateLog" Content="更新日志" HorizontalAlignment="Right" Margin="0,0,257,0" VerticalAlignment="Bottom" Width="93" Click="CallMethodButton_Click_8"/>
                 <Rectangle Fill="#FFFF3A00" Height="30" Margin="0,50,0,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
@@ -149,7 +149,7 @@
 						   Background="Transparent" />
                     </RadioButton>
                 </WrapPanel>
-                <CheckBox Content="打开声音提醒" IsChecked="{Binding CurrentEnableSoundNotify}" HorizontalAlignment="Left" Margin="105,86,0,0" VerticalAlignment="Top"/>
+                <CheckBox Content="打开声音提醒和仿win8提醒" IsChecked="{Binding CurrentEnableSoundNotify}" HorizontalAlignment="Left" Margin="105,86,0,0" VerticalAlignment="Top"/>
                 <metro2:CallMethodButton x:Name="btn_FixChart" Content="修复资源统计图错误" HorizontalAlignment="Left" Margin="344,86,0,0" VerticalAlignment="Top" Click="btn_FixChart_Click" Height="49" Width="170" FontSize="16"/>
                 <TextBlock HorizontalAlignment="Left" Margin="105,215,0,0" VerticalAlignment="Top" Width="409"><Run Text="★如果出现两个KCV图标，请删除WindowsNotifier.dll，它在KCV的Plugins目录下"/><LineBreak/><Run Text="★猫后自动刷新功能是在游戏猫了之后，会自动刷新并重新进入游戏（注意，打开后请保持游戏窗口在最上方，不要覆盖游戏窗口，"/><LineBreak/><Run Text="否则无法自动重新进入游戏）"/><LineBreak/><Run Text="★右键托盘按钮可调出菜单"/></TextBlock>
                 <CheckBox Content="猫后自动刷新并进入游戏" HorizontalAlignment="Left" Margin="105,106,0,0" VerticalAlignment="Top" IsChecked="{Binding CurrentNekoDetector}" Width="158"/>

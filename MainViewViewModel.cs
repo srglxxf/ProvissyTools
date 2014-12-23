@@ -530,6 +530,10 @@ namespace ProvissyTools
             {
                 e.Cancel = true;
             }
+            else
+            {
+                AnimationNotifier.Current.Close();
+            }
         }
 
         public void clearProvissyTools()
