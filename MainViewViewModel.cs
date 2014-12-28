@@ -532,7 +532,7 @@ namespace ProvissyTools
             }
             else
             {
-                AnimationNotifier.Current.Close();
+
             }
         }
 

@@ -12,6 +12,7 @@ using Grabacr07.KanColleWrapper.Models;
 using Grabacr07.KanColleWrapper.Models.Raw;
 using Livet;
 using Grabacr07.KanColleWrapper;
+using System.Windows;
 
 namespace ProvissyTools
 {
@@ -22,7 +23,7 @@ namespace ProvissyTools
         private bool waitingForShip;
         private int dockid;
         private readonly int[] shipmats;
-        private readonly string LogTimestampFormat = "yyyy-MM-dd HH:mm:ss";
+        public readonly string LogTimestampFormat = "yyyy-MM-dd HH:mm:ss";
 
         private enum LogType
         {
@@ -109,6 +110,7 @@ namespace ProvissyTools
         private void BattleResult(kcsapi_battleresult br)
         {
             if (br.api_get_ship == null)
+            {
                 if (ProvissyToolsSettings.Current.EnableNullDropLogging)
                 {
                     Log(LogType.ShipDrop, "{0},{1},{2},{3},{4}", DateTime.Now.ToString(this.LogTimestampFormat),
@@ -117,16 +119,17 @@ namespace ProvissyTools
                 br.api_enemy_info.api_deck_name,
                 br.api_win_rank);
                 }
-                else
-                {
-                    return;
-                }
+            }
+            else
+            {
 
-            Log(LogType.ShipDrop, "{0},{1},{2},{3},{4}", DateTime.Now.ToString(this.LogTimestampFormat),
-                br.api_get_ship.api_ship_name,
-                br.api_quest_name,
-                br.api_enemy_info.api_deck_name,
-                br.api_win_rank);
+                Log(LogType.ShipDrop, "{0},{1},{2},{3},{4}", DateTime.Now.ToString(this.LogTimestampFormat),
+                    br.api_get_ship.api_ship_name,
+                    br.api_quest_name,
+                    br.api_enemy_info.api_deck_name,
+                    br.api_win_rank);
+            }
+            
         }
 
         private void MaterialsHistory(kcsapi_material[] source)

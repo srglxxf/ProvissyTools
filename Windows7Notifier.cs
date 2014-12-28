@@ -16,7 +16,6 @@ namespace ProvissyTools
         CustomSound sound = new CustomSound();
         private NotifyIcon notifyIcon;
         private EventHandler activatedAction;
-        private AnimationNotifier animeNotifier;
 
         public void Initialize()
         {
@@ -60,8 +59,6 @@ namespace ProvissyTools
 
                 notifyIcon.ContextMenu = menu;
             }
-            animeNotifier = new AnimationNotifier();
-            animeNotifier.Show();
 
         }
 
@@ -79,7 +76,6 @@ namespace ProvissyTools
             }
             notifyIcon.ShowBalloonTip(2000, header, body, ToolTipIcon.Info);
             sound.SoundOutput(type, header, false);
-            animeNotifier.AnimationStart(type, body);
         }
 
         public object GetSettingsView()
@@ -92,10 +88,6 @@ namespace ProvissyTools
             if (this.notifyIcon != null)
             {
                 this.notifyIcon.Dispose();
-            }
-            if(this.animeNotifier != null)
-            {
-                this.animeNotifier.Close();
             }
         }
     }

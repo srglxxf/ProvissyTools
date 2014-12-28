@@ -142,9 +142,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimationNotifier.xaml.cs">
-      <DependentUpon>AnimationNotifier.xaml</DependentUpon>
-    </Compile>
     <Compile Include="BattleWatcher.cs" />
     <Compile Include="CommonHelper.cs" />
     <Compile Include="Counter.cs" />
@@ -218,10 +215,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AnimationNotifier.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainContentWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

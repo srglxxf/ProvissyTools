@@ -83,7 +83,7 @@ namespace ProvissyTools
                  {
                      sb.Append(retVal[i].ToString("x2"));
                  }
-                 if (string.Equals(sb.ToString(), "F6FFB14117E3E209E4BDDEDBB8E952B9"))
+                 if (string.Equals(sb.ToString().ToUpper(), "F6FFB14117E3E209E4BDDEDBB8E952B9"))
                  {
                      return 20;
                  }
@@ -110,7 +110,7 @@ namespace ProvissyTools
                 {
                     sb.Append(retVal[i].ToString("x2"));
                 }
-                if (string.Equals(sb.ToString(), "195ED09E0B4F3B09EA4A3B67A0D3F396"))
+                if (string.Equals(sb.ToString().ToUpper(), "195ED09E0B4F3B09EA4A3B67A0D3F396"))
                 {
                     return 20;
                 }
@@ -136,7 +136,7 @@ namespace ProvissyTools
                 {
                     sb.Append(retVal[i].ToString("x2"));
                 }
-                if (string.Equals(sb.ToString(), "6813EBECD58E557E1D65C08E2B1030AF"))
+                if (string.Equals(sb.ToString().ToUpper(), "6813EBECD58E557E1D65C08E2B1030AF"))
                 {
                     return 20;
                 }
@@ -162,7 +162,7 @@ namespace ProvissyTools
                 {
                     sb.Append(retVal[i].ToString("x2"));
                 }
-                if (string.Equals(sb.ToString(), "3959048BC55B1C50F3A2106CF6BBA16F"))
+                if (string.Equals(sb.ToString().ToUpper(), "3959048BC55B1C50F3A2106CF6BBA16F"))
                 {
                     return 20;
                 }

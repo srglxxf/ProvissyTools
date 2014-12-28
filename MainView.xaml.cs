@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Windows.Markup;
 using Grabacr07.KanColleViewer.ViewModels;
 using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleWrapper;
@@ -30,6 +31,7 @@ using System.ComponentModel.Composition;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using System.Management;
+using Fiddler;
 
 /*  
  *  Code wtritten by @Provissy.
@@ -58,6 +60,7 @@ namespace ProvissyTools
 
         private System.Timers.Timer timer = new System.Timers.Timer(300000);
         System.Net.WebClient webClientForUpload = new System.Net.WebClient();
+        WebClient wClient = new WebClient();
         public MainView()
         {
             InitializeComponent();
@@ -67,9 +70,21 @@ namespace ProvissyTools
             WelcomePage.Visibility = Visibility.Visible;
             timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
             webClientForUpload.Headers.Add("Content-Type", "binary/octet-stream");
-            timer.Start();
             loadAccount();
+            timer.Start();
+            wClient.DownloadDataCompleted += wClient_DownloadDataCompleted;
+            wu.UploadFileCompleted += wu_UploadFileCompleted;
             Instance = this;
+        }
+
+        void wu_UploadFileCompleted(object sender, UploadFileCompletedEventArgs e)
+        {
+            lb_BBS_ShowState.Content = "送信完了";
+        }
+
+        void wClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
+        {
+            lb_BBS_ShowState.Content = "受信完了";
         }
 
         private void versionChecker()
@@ -103,25 +118,11 @@ namespace ProvissyTools
                 if (ProvissyToolsSettings.Current.UsernameOfPT == "")
                     return;
                 Tbl_Username.Text = ProvissyToolsSettings.Current.UsernameOfPT;
+                lb_Backup_Username.Content = ProvissyToolsSettings.Current.UsernameOfPT;
                 RegisterOrLogin.Visibility = Visibility.Collapsed;
                 Btn_NaviToCloudBackup.IsEnabled = true;
             }
             catch { }
-        }
-
-
-        private void FTP_GoToBBSCenter()
-        {
-            try
-            {
-                //Proxy.GetProxy
-                FTP_FOR_BBS.GotoDirectory("BBS_Test_Center");
-                btn_ReInitialize.Visibility = Visibility.Hidden;
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("初始化服务器连接失败。");
-            }
         }
 
         public void ErrorHandler(Exception errorMessage)
@@ -153,7 +154,7 @@ namespace ProvissyTools
 
         bool newUpdateAvailable = false;
         
-        WebClient wClient = new WebClient();
+        
 
         #region Check update.
 
@@ -251,19 +252,7 @@ namespace ProvissyTools
             Process.Start("http://tieba.baidu.com/p/3479005804");
         }
 
-        private void CallMethodButton_Click_4(object sender, RoutedEventArgs e)
-        {
-            closeAllTabs();
-            closeFuncTab();
-            AkiEvent2014.Visibility = Visibility.Visible;
-            try
-            {
-                StreamReader s = new StreamReader(UniversalConstants.CurrentDirectory + "PrvToolsUsrCfg");
-                string str = s.ReadLine();
-                tb_BBS_Username.Text = str;
-            }
-            catch { }
-        }
+
 
         #region Control fucntion tabs.
 
@@ -412,6 +401,17 @@ namespace ProvissyTools
             }
         }
 
+        private void CallMethodButton_Click_4(object sender, RoutedEventArgs e)
+        {
+            closeAllTabs();
+            closeFuncTab();
+            AkiEvent2014.Visibility = Visibility.Visible;
+            if(ProvissyToolsSettings.Current.UsernameOfPT != "")
+            {
+                tb_BBS_Username.Text = ProvissyToolsSettings.Current.UsernameOfPT;
+            }
+        }
+
         #endregion 
 
         private void CallMethodButton_Click_8(object sender, RoutedEventArgs e)
@@ -433,120 +433,101 @@ namespace ProvissyTools
 
         private void CallMethodButton_Click_10(object sender, RoutedEventArgs e)
         {
-            Process.Start("http://tieba.baidu.com/p/3381387613");
+            System.IO.Stream s = new System.IO.MemoryStream();
+            System.Windows.Markup.XamlWriter.Save((FlowDocument)rtb_BBS_CommentToSend.Document,s);
+            byte[] data = new byte[s.Length];
+            s.Position = 0;
+            s.Read(data, 0, data.Length);
+            s.Close();
+            File.WriteAllBytes(UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4", data);
+            webClientForUpload.UploadFile("http://provissy.com/UpdateToBBSCenter.php", "POST", UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4");
+            File.Delete(UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4");
         }
 
         #region BBS center.
+        WebClient wu = new WebClient();
 
-        FTPControl FTP_FOR_BBS = new FTPControl(new Uri("ftp://m50.coreserver.jp/"), "provissy", "qkMWpEJkvW5d");
-
-        private void btn_BBS_SendComment_Click(object sender, RoutedEventArgs e)
-        {
-            //lb_BBS_ShowState.Content = "发送中";
-            sendCommentAsync();
-        }
-
-        private void sendCommentAsync()
+        private async void btn_BBS_SendComment_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                    byte[] downloadedComments = FTP_FOR_BBS.DownloadFile("BBS_Test_2");
-                    System.IO.Stream ss = new System.IO.MemoryStream(downloadedComments);
-                    FlowDocument downloadedDoc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
-                    ss.Close();
-                    FlowDocument document = rtb_BBS_CommentToSend.Document;
-                    Paragraph p = new Paragraph(new Run(DateTime.Now.ToString() + "---" + tb_BBS_Username.Text));
-                    document.Blocks.InsertBefore(document.Blocks.FirstBlock, p);
-                    FlowDocument finalDoc = FlowDocumentJoint(document, downloadedDoc);
-                    System.IO.Stream s = new System.IO.MemoryStream();
-                    System.Windows.Markup.XamlWriter.Save(finalDoc, s);
-                    byte[] data = new byte[s.Length];
-                    s.Position = 0;
-                    s.Read(data, 0, data.Length);
-                    s.Close();
-                    FTP_FOR_BBS.UploadFile(data, "BBS_Test_2", true);
-                    //return "发送完毕";
-            }
-            catch (Exception ex)
-            {
-                    
-                    ErrorHandler(ex);
-                    //return "发送失败";
-            }
-        }
+                lb_BBS_ShowState.Content = "送信中...";
+                WebClient w = new WebClient();
+                
+                wu.Headers.Add("Content-Type", "binary/octet-stream");
+                FlowDocument downloadedDoc = XamlReader.Load(new MemoryStream(await w.DownloadDataTaskAsync("http://provissy.com/BBSCenter/BBS_Test_4"))) as FlowDocument;
+                FlowDocument sourceDocumentToSend = rtb_BBS_CommentToSend.Document;
 
-        private FlowDocument FlowDocumentJoint(FlowDocument doc1, FlowDocument doc2)
-        {
-            FlowDocument FlowDocument = new FlowDocument();
-            List<Block> flowDocumetnBlocks1 = new List<Block>(doc1.Blocks);
-            List<Block> flowDocumetnBlocks2 = new List<Block>(doc2.Blocks);
-            foreach (Block item in flowDocumetnBlocks1)
-            {
-                FlowDocument.Blocks.Add(item);
-            }
-            foreach (Block item in flowDocumetnBlocks2)
-            {
-                FlowDocument.Blocks.Add(item);
-            }
-            return FlowDocument;
-        }
+                Paragraph p = new Paragraph(new Run(DateTime.Now.ToString() + "---" + tb_BBS_Username.Text));
+                sourceDocumentToSend.Blocks.InsertBefore(sourceDocumentToSend.Blocks.FirstBlock, p);
 
-        private void btn_BBS_GetComments_Click(object sender, RoutedEventArgs e)
-        {
-            //lb_BBS_ShowState.Content = "刷新中";
-            //rtb_BBS_Comment.Document = getCommentsAsync();
-            getCommentsAsync();
-        }
-
-        private void getCommentsAsync()
-        {
-            //return await Task.Run(() =>{
-            try
-            {
-                System.IO.Stream ss =  new System.IO.MemoryStream(FTP_FOR_BBS.DownloadFile("BBS_Test_2"));
-                FlowDocument doc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
-                    ss.Close();
-                    rtb_BBS_Comment.Document = doc;
-                    //return doc;
-            }
-            catch (Exception ex)
-            {
-                    ErrorHandler(ex);
-                    //return;
-                    //return "刷新失败";
-            }
-                //});
-        }
-
-
-        private void isAuto_forGetComments_Click()
-        {
-            try
-            {
-                Action a = new Action(() =>
+                // Combine 2 flow documents.
+                FlowDocument finalDoc = new FlowDocument();
+                List<Block> flowDocumetnBlocks1 = new List<Block>(sourceDocumentToSend.Blocks);
+                List<Block> flowDocumetnBlocks2 = new List<Block>(downloadedDoc.Blocks);
+                foreach (Block item in flowDocumetnBlocks1)
                 {
-                byte[] downloadedComments = FTP_FOR_BBS.DownloadFile("BBS_Test_2");
-                System.IO.Stream ss = new System.IO.MemoryStream(downloadedComments);
-                FlowDocument doc = System.Windows.Markup.XamlReader.Load(ss) as FlowDocument;
-                ss.Close();
-                    rtb_BBS_Comment.Document = doc;
-                    lb_BBS_ShowState.Content = "刷新完毕";
-                    timer.Start();
-                });
-                this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
-            }
-            catch (Exception ex)
-            {
-                Action a = new Action(() =>
+                    finalDoc.Blocks.Add(item);
+                }
+                foreach (Block item in flowDocumetnBlocks2)
                 {
-                    timer.Start();
-                    lb_BBS_ShowState.Content = "刷新失败";
-                    ErrorHandler(ex);
-                });
-                this.Dispatcher.Invoke(a, DispatcherPriority.ApplicationIdle);
+                    finalDoc.Blocks.Add(item);
+                }
+
+
+                Stream s = new MemoryStream();
+                XamlWriter.Save(finalDoc, s);
+
+                byte[] data = new byte[s.Length];
+                s.Position = 0;
+                s.Read(data, 0, data.Length);
+                s.Close();
+                File.WriteAllBytes(UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4", data);
+
+                await wu.UploadFileTaskAsync("http://provissy.com/UpdateToBBSCenter.php", "POST", UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4");
+                File.Delete(UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4");
 
             }
+            catch(Exception ex)
+            {
+                ErrorHandler(ex);
+            }
         }
+
+        //private async Task<string> sendCommentAsync(FlowDocument sourceDocumentToSend,string username)
+        //{
+        //    try
+        //    {
+
+        //        return "送信完了";
+        //    }
+        //}
+
+        private async void btn_BBS_GetComments_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                lb_BBS_ShowState.Content = "受信中...";
+                rtb_BBS_Comment.Document = XamlReader.Load(new MemoryStream(await wClient.DownloadDataTaskAsync("http://provissy.com/BBSCenter/BBS_Test_4"))) as FlowDocument;
+            }
+            catch(Exception ex)
+            {
+                ErrorHandler(ex);
+            }
+        }
+
+        //private async Task<object> getCommentsAsync()
+        //{
+        //    return await Task.Run(() =>
+        //    {
+        //        WebClient w = new WebClient();
+        //        System.IO.Stream ss = new System.IO.MemoryStream(w.DownloadData("http://provissy.com/BBSCenter/BBS_Test_4"));
+        //        //object o = System.Windows.Markup.XamlReader.Load(ss);
+        //        //ss.Close();
+        //        //return o;
+        //    });
+                
+        //}
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -569,21 +550,6 @@ namespace ProvissyTools
             else
             {
                 timer.Stop();
-            }
-        }
-
-        private void btn_ReInitialize_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                FTP_GoToBBSCenter();
-                btn_BBS_GetComments.IsEnabled = true;
-                btn_BBS_SendComment.IsEnabled = true;
-                btn_ReInitialize.Visibility = Visibility.Hidden;
-            }
-            catch
-            {
-                btn_ReInitialize.Content = "失败，请重试";
             }
         }
 
@@ -791,34 +757,34 @@ namespace ProvissyTools
         {
             await Task.Run(() =>
             {
-                
-            string l = UniversalConstants.CurrentDirectory;
-            if (File.Exists(l + "ItemBuildLog.csv"))
-            {
-                File.Copy(UniversalConstants.CurrentDirectory + "ItemBuildLog.csv", UniversalConstants.CurrentDirectory + "ItemBuildLog" + " - " + username + ".csv", true);
-                webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", UniversalConstants.CurrentDirectory + "\\ItemBuildLog" + " - " + username + ".csv");
-                File.Delete(UniversalConstants.CurrentDirectory + "ItemBuildLog" + " - " + username + ".csv");
-            }
-            if (File.Exists(l + "ShipBuildLog.csv"))
-            {
-                File.Copy(UniversalConstants.CurrentDirectory + "ShipBuildLog.csv", UniversalConstants.CurrentDirectory + "ShipBuildLog" + " - " + username + ".csv", true);
-                webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", UniversalConstants.CurrentDirectory + "\\ShipBuildLog" + " - " + username + ".csv");
-                File.Delete(UniversalConstants.CurrentDirectory + "ShipBuildLog" + " - " + username + ".csv");
-            }
-            if (File.Exists(l + "DropLog.csv"))
-            {
-                File.Copy(UniversalConstants.CurrentDirectory + "DropLog.csv", UniversalConstants.CurrentDirectory + "DropLog" + " - " + username + ".csv", true);
-                webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", UniversalConstants.CurrentDirectory + "\\DropLog" + " - " + username + ".csv");
-                File.Delete(UniversalConstants.CurrentDirectory + "DropLog" + " - " + username + ".csv");
-            }
-            if (File.Exists(l + "MaterialsLog.csv"))
-            {
-                File.Copy(UniversalConstants.CurrentDirectory + "MaterialsLog.csv", UniversalConstants.CurrentDirectory + "MaterialsLog" + " - " + username + ".csv", true);
-                webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", UniversalConstants.CurrentDirectory + "\\MaterialsLog" + " - " + username + ".csv");
-                File.Delete(UniversalConstants.CurrentDirectory + "MaterialsLog" + " - " + username + ".csv");
-            }
-            
-            UploadToCloudComplete();
+
+                string c = UniversalConstants.CurrentDirectory;
+                if (File.Exists(c + "ItemBuildLog.csv"))
+                {
+                    File.Copy(c + "ItemBuildLog.csv", c + "ItemBuildLog" + " - " + username + ".csv", true);
+                    webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", c + "ItemBuildLog" + " - " + username + ".csv");
+                    File.Delete(c + "ItemBuildLog" + " - " + username + ".csv");
+                }
+                if (File.Exists(c + "ShipBuildLog.csv"))
+                {
+                    File.Copy(c + "ShipBuildLog.csv", c + "ShipBuildLog" + " - " + username + ".csv", true);
+                    webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", c + "ShipBuildLog" + " - " + username + ".csv");
+                    File.Delete(c + "ShipBuildLog" + " - " + username + ".csv");
+                }
+                if (File.Exists(c + "DropLog.csv"))
+                {
+                    File.Copy(c + "DropLog.csv", c + "DropLog" + " - " + username + ".csv", true);
+                    webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", c + "DropLog" + " - " + username + ".csv");
+                    File.Delete(c + "DropLog" + " - " + username + ".csv");
+                }
+                if (File.Exists(c + "MaterialsLog.csv"))
+                {
+                    File.Copy(c + "MaterialsLog.csv", c + "MaterialsLog" + " - " + username + ".csv", true);
+                    webClientForUpload.UploadFile("http://provissy.com/UploadToStatisticFolder.php", "POST", c + "MaterialsLog" + " - " + username + ".csv");
+                    File.Delete(c + "MaterialsLog" + " - " + username + ".csv");
+                }
+
+                UploadToCloudComplete();
             });
         }
 
@@ -852,7 +818,7 @@ namespace ProvissyTools
             funcbtn_Donate.Content = "Donate";
             funcbtn_Settings.Content = "Settings";
             //btn_CloseKCV.Content = "Close KCV";
-            btn_ReInitialize.Content = "Connect to server";
+            //btn_ReInitialize.Content = "Connect to server";
             btn_BBS_SetColorToRed.Content = "Red";
             rtb_BBS_CommentToSend.AppendText("Type your comment");
             btn_BBS_GetComments.Content = "Refresh";
@@ -880,44 +846,52 @@ namespace ProvissyTools
 
         #endregion
 
-        private void btn_FixChart_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (File.Exists(UniversalConstants.CurrentDirectory + "WPFToolkit.dll"))
-                {
-                    File.Delete(UniversalConstants.CurrentDirectory + "WPFToolkit.dll");
-                    wClient.DownloadFile("http://provissy.com/WPFToolkit.dll", UniversalConstants.CurrentDirectory + @"\WPFToolkit.dll");
-                }
-
-                else
-                {
-                    wClient.DownloadFile("http://provissy.com/WPFToolkit.dll", UniversalConstants.CurrentDirectory + @"\WPFToolkit.dll");
-                }
-
-                if (File.Exists(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll"))
-                {
-                    File.Delete(UniversalConstants.CurrentDirectory + "System.Windows.Controls.DataVisualization.Toolkit.dll");
-                    wClient.DownloadFile("http://provissy.com/System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory + @"\System.Windows.Controls.DataVisualization.Toolkit.dll");
-                }
-
-                else
-                {
-                    wClient.DownloadFile("http://provissy.com/System.Windows.Controls.DataVisualization.Toolkit.dll", UniversalConstants.CurrentDirectory + @"\System.Windows.Controls.DataVisualization.Toolkit.dll");
-                }
-                MessageBox.Show("修复完毕！");
-            }
-            catch(Exception ex)
-            {
-                ErrorHandler(ex);
-            }
-        }
-
         private async void Btn_Warning_Update_Click(object sender, RoutedEventArgs e)
         {
             Btn_Warning_Update.Content = "正在更新...";
             await updaterDownloader();
         }
+
+        private void rtb_BBS_CommentToSend_GotFocus(object sender, RoutedEventArgs e)
+        {
+            rtb_BBS_CommentToSend.Document = null;
+        }
+
+
+        //ShadowsocksController controller = new ShadowsocksController();
+
+        //private void Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Settings.Current.EnableProxy = true;
+        //    Settings.Current.EnableSSLProxy = true;
+        //    Settings.Current.ProxyHost = "localhost";
+        //    Settings.Current.ProxyPort = 8123;
+        //    Settings.Current.ProxySettings.Host = "localhost";
+        //    Settings.Current.ProxySettings.IsEnabled = true;
+        //    Settings.Current.ProxySettings.IsEnabledOnSSL = true;
+        //    Settings.Current.ProxySettings.Port = 8123;
+        //    try
+        //    {
+                
+
+        //        //MenuViewController viewController = new MenuViewController(controller);
+
+        //        controller.Start();
+
+        //        //viewController.controller.ToggleEnable(false);
+
+        //        //Directory.SetCurrentDirectory(UniversalConstants.CurrentDirectory);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        MessageBox.Show(ex.ToString());
+        //    }
+        //}
+
+        //private void Button_Click_2(object sender, RoutedEventArgs e)
+        //{
+        //    controller.ToggleEnable(true);
+        //}
     }
 }
 
