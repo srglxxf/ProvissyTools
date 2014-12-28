@@ -145,7 +145,6 @@
     <Compile Include="BattleWatcher.cs" />
     <Compile Include="CommonHelper.cs" />
     <Compile Include="Counter.cs" />
-    <Compile Include="CreateTabItem.cs" />
     <Compile Include="CustomSound.cs" />
     <Compile Include="GameWatcher.cs" />
     <Compile Include="LandscapeViewModel.cs" />

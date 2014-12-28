@@ -13,35 +13,44 @@ namespace ProvissyTools
 	[Export(typeof(IToolPlugin))]
     [ExportMetadata("Title", "ProvissyTools")]
     [ExportMetadata("Description", "Provissy KCV Tools")]
-	[ExportMetadata("Version", "3.1")]
+	[ExportMetadata("Version", "3.4")]
 	[ExportMetadata("Author", "@Provissy")]
 	public class ProvissyToolsLoader : IToolPlugin
 	{
         public ProvissyToolsLoader()
         {
-            CommonHelper.StartupChecker();
-            if (File.Exists(ProvissyToolsSettings.usageRecordPath))
+            if (!UniversalConstants.Initialized)
             {
-                StreamReader s = new StreamReader(ProvissyToolsSettings.usageRecordPath);
-                string versionVerify = s.ReadLine();
-                s.Close();
-                if (versionVerify == "3.2")
+                CommonHelper.StartupChecker();
+                if (File.Exists(ProvissyToolsSettings.usageRecordPath))
                 {
-                    ProvissyToolsSettings.Load();
-                    mainView = new MainView { DataContext = new MainViewViewModel { MapInfoProxy = new MapInfoProxy() } };
+                    StreamReader s = new StreamReader(ProvissyToolsSettings.usageRecordPath);
+                    string versionVerify = s.ReadLine();
+                    s.Close();
+                    if (versionVerify == "3.2")
+                    {
+                        ProvissyToolsSettings.Load();
+                        mainView = new MainView { DataContext = new MainViewViewModel { MapInfoProxy = new MapInfoProxy() } };
+                    }
+                    else
+                    {
+                        File.Delete(ProvissyToolsSettings.usageRecordPath);
+                        File.Delete(ProvissyToolsSettings.filePath);
+                        Welcome w = new Welcome { DataContext = new ProvissyToolsSettings() };
+                        w.ShowDialog();
+                    }
                 }
                 else
                 {
-                    File.Delete(ProvissyToolsSettings.usageRecordPath);
-                    File.Delete(ProvissyToolsSettings.filePath);
                     Welcome w = new Welcome { DataContext = new ProvissyToolsSettings() };
                     w.ShowDialog();
                 }
+                UniversalConstants.Initialized = true;
             }
             else
             {
-                Welcome w = new Welcome { DataContext = new ProvissyToolsSettings() };
-                w.ShowDialog();
+                ProvissyToolsSettings.Load();
+                mainView = new MainView { DataContext = new MainViewViewModel { MapInfoProxy = new MapInfoProxy() } };
             }
         }
 

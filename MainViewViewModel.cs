@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Management;
 using MetroRadiance;
+using Grabacr07.KanColleViewer;
 
 namespace ProvissyTools
 {
@@ -517,10 +518,14 @@ namespace ProvissyTools
 
         }
 
+        //public TabItemViewModel
+
         void timer_Tick(object sender, EventArgs e)
         {
             timer.Stop();
             Grabacr07.KanColleViewer.App.Current.MainWindow.Closing += new System.ComponentModel.CancelEventHandler(kcvCanceling);
+            
+            //CreateTabItem c = new CreateTabItem();
         }
 
         private void kcvCanceling(object o ,System.ComponentModel.CancelEventArgs e)

@@ -59,6 +59,7 @@ namespace ProvissyTools
         
 
         private System.Timers.Timer timer = new System.Timers.Timer(300000);
+        private System.Timers.Timer timerForBBS = new System.Timers.Timer(1500); //自動受信，1500ミリ
         System.Net.WebClient webClientForUpload = new System.Net.WebClient();
         WebClient wClient = new WebClient();
         public MainView()
@@ -69,11 +70,13 @@ namespace ProvissyTools
             Panel.SetZIndex(FunctionGrid, 1);
             WelcomePage.Visibility = Visibility.Visible;
             timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
+            timerForBBS.Elapsed += new ElapsedEventHandler(timerForBBS_Elapsed);
             webClientForUpload.Headers.Add("Content-Type", "binary/octet-stream");
             loadAccount();
             timer.Start();
-            wClient.DownloadDataCompleted += wClient_DownloadDataCompleted;
-            wu.UploadFileCompleted += wu_UploadFileCompleted;
+            timerForBBS.Start();
+            wForBBSDownlad.DownloadDataCompleted += wClient_DownloadDataCompleted;
+            wForBBSUpload.UploadFileCompleted += wu_UploadFileCompleted;
             Instance = this;
         }
 
@@ -82,9 +85,12 @@ namespace ProvissyTools
             lb_BBS_ShowState.Content = "送信完了";
         }
 
+        // Run a auto-check loop.
+        // Event fires when get comments complete.
         void wClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
         {
-            lb_BBS_ShowState.Content = "受信完了";
+            //lb_BBS_ShowState.Content = "受信完了";
+            timerForBBS.Start();
         }
 
         private void versionChecker()
@@ -143,13 +149,20 @@ namespace ProvissyTools
                 {
                     if (ProvissyToolsSettings.Current.UsernameOfPT != "")
                         btn_Backup_LocalToCloud_Click(null, null);
-                    //timer.Stop();
-                    //lb_BBS_ShowState.Content = "自动刷新中";
-                    //Thread t = new Thread(isAuto_forGetComments_Click);
-                    //t.Start();
-                    //timer.Start();
                 }
             );  
+        }
+
+        private void timerForBBS_Elapsed(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke
+            (
+                DispatcherPriority.Normal, (Action)delegate()
+                {
+                    timerForBBS.Stop();
+                    btn_BBS_GetComments_Click(null, null);
+                }
+            );
         }
 
         bool newUpdateAvailable = false;
@@ -445,16 +458,21 @@ namespace ProvissyTools
         }
 
         #region BBS center.
-        WebClient wu = new WebClient();
+        WebClient wForBBSUpload = new WebClient();
 
         private async void btn_BBS_SendComment_Click(object sender, RoutedEventArgs e)
         {
+            if (tb_BBS_Username.Text == "输入你的名字" || tb_BBS_Username.Text == "")
+            {
+                MessageBox.Show("请输入用户名！或者注册一个ProvissyTools账户！");
+                return;
+            }
             try
             {
                 lb_BBS_ShowState.Content = "送信中...";
                 WebClient w = new WebClient();
                 
-                wu.Headers.Add("Content-Type", "binary/octet-stream");
+                wForBBSUpload.Headers.Add("Content-Type", "binary/octet-stream");
                 FlowDocument downloadedDoc = XamlReader.Load(new MemoryStream(await w.DownloadDataTaskAsync("http://provissy.com/BBSCenter/BBS_Test_4"))) as FlowDocument;
                 FlowDocument sourceDocumentToSend = rtb_BBS_CommentToSend.Document;
 
@@ -484,8 +502,9 @@ namespace ProvissyTools
                 s.Close();
                 File.WriteAllBytes(UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4", data);
 
-                await wu.UploadFileTaskAsync("http://provissy.com/UpdateToBBSCenter.php", "POST", UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4");
+                await wForBBSUpload.UploadFileTaskAsync("http://provissy.com/UpdateToBBSCenter.php", "POST", UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4");
                 File.Delete(UniversalConstants.CurrentDirectory + @"\ProvissyTools\BBS_Test_4");
+                btn_BBS_GetComments_Click(null, null);
 
             }
             catch(Exception ex)
@@ -503,16 +522,18 @@ namespace ProvissyTools
         //    }
         //}
 
+        WebClient wForBBSDownlad = new WebClient();
+
         private async void btn_BBS_GetComments_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                lb_BBS_ShowState.Content = "受信中...";
-                rtb_BBS_Comment.Document = XamlReader.Load(new MemoryStream(await wClient.DownloadDataTaskAsync("http://provissy.com/BBSCenter/BBS_Test_4"))) as FlowDocument;
+                //lb_BBS_ShowState.Content = "自动受信";
+                rtb_BBS_Comment.Document = XamlReader.Load(new MemoryStream(await wForBBSDownlad.DownloadDataTaskAsync("http://provissy.com/BBSCenter/BBS_Test_4"))) as FlowDocument;
             }
-            catch(Exception ex)
+            catch
             {
-                ErrorHandler(ex);
+                lb_BBS_ShowState.Content = "受信失敗";
             }
         }
 
@@ -539,18 +560,6 @@ namespace ProvissyTools
         private void btn_BBS_SetColorToRed_Click(object sender, RoutedEventArgs e)
         {
             rtb_BBS_CommentToSend.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
-        }
-
-        private void BBS_AutoRefreshComments_Checked(object sender, RoutedEventArgs e)
-        {
-            if (BBS_AutoRefreshComments.IsChecked == true)
-            {
-                timer.Start();
-            }
-            else
-            {
-                timer.Stop();
-            }
         }
 
         #endregion
@@ -821,11 +830,11 @@ namespace ProvissyTools
             //btn_ReInitialize.Content = "Connect to server";
             btn_BBS_SetColorToRed.Content = "Red";
             rtb_BBS_CommentToSend.AppendText("Type your comment");
-            btn_BBS_GetComments.Content = "Refresh";
+            //btn_BBS_GetComments.Content = "Refresh";
             btn_BBS_SendComment.Content = "Send";
             btn_BBS_ZoomIn.Content = "Zoom in";
-            BBS_AutoRefreshComments.Content = "Auto refresh (30s)";
-            btn_AkiEvent_MapViewer.Content = "Check HP Of Event Map";
+            //BBS_AutoRefreshComments.Content = "Auto refresh (30s)";
+            //btn_AkiEvent_MapViewer.Content = "Check HP Of Event Map";
             tbl_Backup_Username.Text = "Username";
             tbl_Backup_Password.Text = "Password";
             //btn_Backup_CreateAccount.Content = "Sign Up";
@@ -840,7 +849,7 @@ namespace ProvissyTools
             tbl_Exp.Text = "EXP";
             tbl_CurrentLevel.Text = "Current Lv";
             btn_ClickToClose.Content = "↑Close↑";
-            lb_BBSTestIntrodution.Content = "BBS Test β3.0";
+            lb_BBSTestIntrodution.Content = "BBS Test β4.2";
 
         }
 
@@ -854,8 +863,35 @@ namespace ProvissyTools
 
         private void rtb_BBS_CommentToSend_GotFocus(object sender, RoutedEventArgs e)
         {
-            rtb_BBS_CommentToSend.Document = null;
+            Paragraph p = new Paragraph(new Run(""));
+            FlowDocument f = new FlowDocument(p);
+            rtb_BBS_CommentToSend.Document = f;
+            rtb_BBS_CommentToSend.GotFocus -= rtb_BBS_CommentToSend_GotFocus;
         }
+
+        private void rtb_BBS_CommentToSend_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.IsKeyDown(Key.LeftCtrl) && e.Key == Key.Enter)
+            {
+                btn_BBS_SendComment_Click(null, null);
+            }
+            else if (e.KeyboardDevice.IsKeyDown(Key.RightCtrl) && e.Key == Key.Enter)
+            {
+                btn_BBS_SendComment_Click(null, null);
+            }
+        }
+
+        //private void Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        CreateTabItem c = new CreateTabItem();
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        MessageBox.Show(ex.ToString());
+        //    }
+        //}
 
 
         //ShadowsocksController controller = new ShadowsocksController();

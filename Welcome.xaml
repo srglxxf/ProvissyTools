@@ -67,7 +67,7 @@
             <CheckBox x:Name="cb_IsReadEULA" Content="已阅读并同意最终用户许可协议" HorizontalAlignment="Left" Margin="296,322,0,0" VerticalAlignment="Top" Foreground="Black"/>
             <TextBlock HorizontalAlignment="Left" Margin="384,225,0,0" TextWrapping="Wrap" Text="扫描右侧二维码或点击复制支付宝地址来捐赠" VerticalAlignment="Top" Height="92" Width="95" FontSize="16" Foreground="Black" MouseDown="TextBlock_MouseDown" Cursor="Hand"/>
             <TextBlock HorizontalAlignment="Left" Margin="10,348,0,0" TextWrapping="Wrap" Text="Written by @provissy , 2014" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
-            <TextBlock Margin="0,366,25,-23" TextWrapping="Wrap" Text="当前版本：3.2+" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="16"/>
+            <TextBlock Margin="0,366,25,-23" TextWrapping="Wrap" Text="当前版本：3.5+" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="16"/>
 
         </Grid>
 
